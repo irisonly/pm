@@ -1,0 +1,212 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  #dashboard {
+    width: 90%;
+    height: 50px;
+    border: 1px solid #fad689;
+    margin: 10px auto;
+    #dash_list {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        width: 200px;
+        line-height: 50px;
+      }
+    }
+  }
+  #query_area {
+    width: 90%;
+    margin: 0 auto;
+    height: 50px;
+    border: 1px solid #fad689;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    form {
+      width: 90%;
+      display: flex;
+      justify-content: space-evenly;
+      input,
+      select {
+        border: 1px solid #fad689;
+        height: 20px;
+        width: 200px;
+        margin-left: 10px;
+      }
+      button {
+        width: 100px;
+        height: 20px;
+        background-color: #fad689;
+        border-radius: 5px;
+        border: none;
+        padding: 0;
+      }
+      a {
+        height: 20px;
+        .add {
+          background-color: #89fad6;
+          padding: 0;
+        }
+        #exit {
+          background-color: #fa8989;
+          padding: 0;
+        }
+      }
+    }
+  }
+  .button_area {
+    width: 90%;
+    margin: 10px auto;
+    display: flex;
+    justify-content: space-between;
+    button {
+      width: 200px;
+      height: 30px;
+      border-radius: 5px;
+      border: none;
+      padding: 0;
+    }
+    a {
+      height: 20px;
+      .add {
+        background-color: #89fad6;
+        padding: 0;
+      }
+      #exit {
+        background-color: #fa8989;
+        padding: 0;
+      }
+    }
+  }
+  .title {
+    width: 90%;
+    margin: 5px auto;
+    display: flex;
+    height: 50px;
+    background-color: #fad689;
+    list-style: none;
+    justify-content: left;
+    padding: 0;
+    li {
+      line-height: 50px;
+      width: 210px;
+      text-align: center;
+    }
+  }
+  .bg-green {
+    background-color: #89fad6;
+  }
+  .bg-black {
+    background-color: #000000;
+    color: #ffffff;
+    width: 30%;
+    // margin-top: 100px;
+  }
+  #container {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    margin: 10px auto;
+
+    .projects {
+      height: 30px;
+      display: flex;
+      justify-content: left;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border: 1px rgb(255, 233, 217) solid;
+      li {
+        text-align: center;
+        width: 210px;
+        line-height: 30px;
+      }
+      .project_name {
+        font-size: 12px;
+      }
+    }
+  }
+  .form_cover {
+    width: 90%;
+    border: 1px solid #fad689;
+    margin: 10px auto;
+    #project_form {
+      width: 40%;
+      height: 800px;
+      margin: 50px 0 0 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      div {
+        display: flex;
+        justify-content: space-between;
+        input,
+        select {
+          height: 30px;
+          border: 1px solid #fad689;
+          width: 500px;
+          padding: 0;
+          margin: 0;
+        }
+        select {
+          width: 502px;
+        }
+        .green {
+          border: 1px solid #89fad6;
+        }
+        .black {
+          border: 1px solid #b9b9b9;
+          width: 50%;
+        }
+      }
+
+      button {
+        height: 50px;
+        background-color: #fad689;
+        border-radius: 5px;
+        border: none;
+      }
+      .bg-green {
+        background-color: #89fad6;
+      }
+      .bg-black {
+        background-color: #000000;
+        width: 100%;
+      }
+    }
+    .delete {
+      height: 50px;
+      border-radius: 5px;
+      border: none;
+      background-color: #fa8989;
+      width: 40%;
+      margin: 0 0 50px 50px;
+    }
+  }
+  .green {
+    border: 1px solid #89fad6;
+  }
+  .black {
+    border: 1px solid #b9b9b9;
+    width: 30%;
+    height: 500px;
+    margin-top: 30px;
+  }
+  .bg {
+    background-image: url("../images/bg.jpeg");
+    background-size: cover; /* 背景图片覆盖整个容器 */
+    background-position: center; /* 背景图片居中显示 */
+    background-repeat: no-repeat; /* 背景图片不重复 */
+    height: 100vh; /* 设置body的高度为视口高度 */
+    margin: 0; /* 移除默认的margin */
+  }
+  .login {
+    margin-top: 10%;
+  }
+}

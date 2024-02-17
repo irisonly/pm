@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <script src="../static/js/main.js"></script>
+    <title>项目管理系统</title>
+  </head>
+  <body>
+    <div id="dashboard">
+      <ul id="dash_list"></ul>
+    </div>
+    <div id="query_area">
+      <form action="" method="get" id="query_form">
+        <div>
+          <label for="">项目名称</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="请输入项目名称，支持模糊查询"
+            id="project_name"
+          />
+        </div>
+
+        <div>
+          <label for="">项目类型</label>
+          <select id="type" name="type_id"></select>
+        </div>
+        <div>
+          <label for="">项目负责人</label>
+          <select id="charge" name="charge_id"></select>
+        </div>
+        <button type="submit">提交筛选</button>
+        <button type="reset">重置筛选</button>
+      </form>
+    </div>
+    <div class="button_area">
+      <a href="./add.html"><button class="add">新增项目</button></a>
+      <a href="./login.html"><button id="exit">登出</button></a>
+    </div>
+    <ul class="title">
+      <li>项目名称</li>
+      <li>项目类型</li>
+      <li>项目状态</li>
+      <li>项目金额</li>
+      <li>项目成本</li>
+      <li>项目发票</li>
+      <li>项目利润</li>
+      <li>项目利润率</li>
+      <li>项目负责人</li>
+      <li>项目开始时间</li>
+      <li>项目结束时间</li>
+    </ul>
+    <div id="container"></div>
+  </body>
+</html>

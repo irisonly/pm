@@ -1,0 +1,215 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+body #dashboard {
+  width: 90%;
+  height: 50px;
+  border: 1px solid #fad689;
+  margin: 10px auto;
+}
+body #dashboard #dash_list {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+body #dashboard #dash_list li {
+  width: 200px;
+  line-height: 50px;
+}
+body #query_area {
+  width: 90%;
+  margin: 0 auto;
+  height: 50px;
+  border: 1px solid #fad689;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body #query_area form {
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+}
+body #query_area form input,
+body #query_area form select {
+  border: 1px solid #fad689;
+  height: 20px;
+  width: 200px;
+  margin-left: 10px;
+}
+body #query_area form button {
+  width: 100px;
+  height: 20px;
+  background-color: #fad689;
+  border-radius: 5px;
+  border: none;
+  padding: 0;
+}
+body #query_area form a {
+  height: 20px;
+}
+body #query_area form a .add {
+  background-color: #89fad6;
+  padding: 0;
+}
+body #query_area form a #exit {
+  background-color: #fa8989;
+  padding: 0;
+}
+body .button_area {
+  width: 90%;
+  margin: 10px auto;
+  display: flex;
+  justify-content: space-between;
+}
+body .button_area button {
+  width: 200px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  padding: 0;
+}
+body .button_area a {
+  height: 20px;
+}
+body .button_area a .add {
+  background-color: #89fad6;
+  padding: 0;
+}
+body .button_area a #exit {
+  background-color: #fa8989;
+  padding: 0;
+}
+body .title {
+  width: 90%;
+  margin: 5px auto;
+  display: flex;
+  height: 50px;
+  background-color: #fad689;
+  list-style: none;
+  justify-content: left;
+  padding: 0;
+}
+body .title li {
+  line-height: 50px;
+  width: 210px;
+  text-align: center;
+}
+body .bg-green {
+  background-color: #89fad6;
+}
+body .bg-black {
+  background-color: #000000;
+  color: #ffffff;
+  width: 30%;
+}
+body #container {
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px auto;
+}
+body #container .projects {
+  height: 30px;
+  display: flex;
+  justify-content: left;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px #ffe9d9 solid;
+}
+body #container .projects li {
+  text-align: center;
+  width: 210px;
+  line-height: 30px;
+}
+body #container .projects .project_name {
+  font-size: 12px;
+}
+body .form_cover {
+  width: 90%;
+  border: 1px solid #fad689;
+  margin: 10px auto;
+}
+body .form_cover #project_form {
+  width: 40%;
+  height: 800px;
+  margin: 50px 0 0 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+body .form_cover #project_form div {
+  display: flex;
+  justify-content: space-between;
+}
+body .form_cover #project_form div input,
+body .form_cover #project_form div select {
+  height: 30px;
+  border: 1px solid #fad689;
+  width: 500px;
+  padding: 0;
+  margin: 0;
+}
+body .form_cover #project_form div select {
+  width: 502px;
+}
+body .form_cover #project_form div .green {
+  border: 1px solid #89fad6;
+}
+body .form_cover #project_form div .black {
+  border: 1px solid #b9b9b9;
+  width: 50%;
+}
+body .form_cover #project_form button {
+  height: 50px;
+  background-color: #fad689;
+  border-radius: 5px;
+  border: none;
+}
+body .form_cover #project_form .bg-green {
+  background-color: #89fad6;
+}
+body .form_cover #project_form .bg-black {
+  background-color: #000000;
+  width: 100%;
+}
+body .form_cover .delete {
+  height: 50px;
+  border-radius: 5px;
+  border: none;
+  background-color: #fa8989;
+  width: 40%;
+  margin: 0 0 50px 50px;
+}
+body .green {
+  border: 1px solid #89fad6;
+}
+body .black {
+  border: 1px solid #b9b9b9;
+  width: 30%;
+  height: 500px;
+  margin-top: 30px;
+}
+body .bg {
+  background-image: url("../images/bg.jpeg");
+  background-size: cover;
+  /* 背景图片覆盖整个容器 */
+  background-position: center;
+  /* 背景图片居中显示 */
+  background-repeat: no-repeat;
+  /* 背景图片不重复 */
+  height: 100vh;
+  /* 设置body的高度为视口高度 */
+  margin: 0;
+  /* 移除默认的margin */
+}
+body .login {
+  margin-top: 10%;
+}
+/*# sourceMappingURL=./main.css.map */

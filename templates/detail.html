@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <script src="../static/js/detail.js"></script>
+    <title>项目管理系统 | 项目详情</title>
+  </head>
+  <body>
+    <ul class="title">
+      <li>项目修改</li>
+      <a href="./index.html"> <li>返回</li></a>
+    </ul>
+    <div class="form_cover">
+      <form action="" method="post" id="project_form">
+        <!-- 项目名称 -->
+        <div>
+          <label for="name">项目名称:</label>
+          <input type="text" id="name" name="name" />
+        </div>
+
+        <!-- 项目类型 -->
+        <div>
+          <label for="type_id">项目类型:</label>
+          <select id="type_id" name="type_id">
+            <!-- 其他类型选项 -->
+          </select>
+        </div>
+
+        <!-- 项目状态 -->
+        <div>
+          <label for="status_id">项目状态:</label>
+          <select id="status_id" name="status_id">
+            <!-- 其他状态选项 -->
+          </select>
+        </div>
+
+        <!-- 项目金额 -->
+        <div>
+          <label for="payment">项目金额:</label>
+          <input type="text" id="payment" name="payment" />
+        </div>
+
+        <!-- 项目成本 -->
+        <div>
+          <label for="cost">项目成本:</label>
+          <input type="text" id="cost" name="cost" />
+        </div>
+
+        <div>
+          <label for="cost">项目尾款:</label>
+          <input type="text" id="balance_payment" name="balance_payment" />
+        </div>
+
+        <!-- 项目负责人 -->
+        <div>
+          <label for="charge_id">项目负责人:</label>
+          <select id="charge_id" name="charge_id">
+            <!-- 其他负责人选项 -->
+          </select>
+        </div>
+
+        <!-- 项目开始时间 -->
+        <div>
+          <label for="start_time">项目开始时间:</label>
+          <input type="date" id="start_time" name="start_time" />
+        </div>
+
+        <!-- 项目结束时间 -->
+        <div>
+          <label for="end_time">项目结束时间:</label>
+          <input type="date" id="end_time" name="end_time" />
+        </div>
+
+        <button type="submit">提交修改</button>
+      </form>
+      <button class="delete" id="delete_project">删除项目</button>
+    </div>
+  </body>
+</html>
