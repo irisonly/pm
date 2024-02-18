@@ -106,7 +106,7 @@ body .bg-green {
 body .bg-black {
   background-color: #000000;
   color: #ffffff;
-  width: 30%;
+  width: 50%;
 }
 body #container {
   width: 90%;
@@ -130,6 +130,8 @@ body #container .projects li {
 }
 body #container .projects .project_name {
   font-size: 12px;
+  overflow: hidden;
+  line-height: 12px;
 }
 body .form_cover {
   width: 90%;
@@ -192,7 +194,7 @@ body .green {
 }
 body .black {
   border: 1px solid #b9b9b9;
-  width: 30%;
+  width: 50%;
   height: 500px;
   margin-top: 30px;
 }

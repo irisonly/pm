@@ -17,6 +17,9 @@ function list_render(data) {
       name_edit.href = "./detail.html?id=" + element.id;
       // name_edit.addEventListener("click", click);
       name_edit.className = "project_name";
+      if (name_edit.innerText.length > 10) {
+        name_edit.innerText = name_edit.innerText.slice(0, 10);
+      }
       name.appendChild(name_edit);
       const type_id = document.createElement("li");
       type_id.textContent = element.type_id;

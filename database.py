@@ -49,6 +49,7 @@ class ProjectStatus(db.Model):
 
 
 class Project(db.Model):
+    __tablename__ = "project"
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, unique=True, nullable=False
     )
@@ -70,6 +71,20 @@ class Project(db.Model):
     status_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("project_status.id"), nullable=False
     )
+    relationship("ProjectCost", backref="total_cost")
+
+
+class ProjectCost(db.Model):
+    __tablename__ = "project_cost"
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, unique=True, nullable=False
+    )
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("project.id"), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    cost: Mapped[float] = mapped_column(Float, nullable=False)
+    remark: Mapped[str] = mapped_column(String, nullable=True)
 
 
 class Database:
@@ -205,12 +220,12 @@ class Database:
         charge_id,
         status_id,
         payment,
-        cost,
         balance_payment,
     ):
-        profit = payment - cost
-        profit_rate = round(profit / payment, 2)
+
         tax = payment * 0.06
+        profit = payment - tax
+        profit_rate = round(profit / payment, 2)
         record = Project(
             name=name,
             start_time=start_time,
@@ -223,7 +238,7 @@ class Database:
             tax=tax,
             balance_payment=balance_payment,
             payment=payment,
-            cost=cost,
+            cost=0,
         )
         self.db.session.add(record)
         try:
@@ -241,6 +256,7 @@ class Database:
             .scalars()
             .all()
         )
+
         records_output = [
             {
                 "id": i.id,
@@ -255,7 +271,7 @@ class Database:
                 "tax": f"{i.tax:,.2f}",
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
-                "cost": f"{i.cost:,.2f}",
+                "cost": f"{0 if self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar() is None else self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar():,.2f}",
             }
             for i in records
         ]
@@ -282,7 +298,16 @@ class Database:
                 "tax": i.tax,
                 "balance_payment": i.balance_payment,
                 "payment": i.payment,
-                "cost": i.cost,
+                "cost": (
+                    0
+                    if self.db.session.query(func.sum(ProjectCost.cost))
+                    .filter(ProjectCost.id == i.id)
+                    .scalar()
+                    is None
+                    else self.db.session.query(func.sum(ProjectCost.cost))
+                    .filter(ProjectCost.id == i.id)
+                    .scalar()
+                ),
             }
             if record_output:
                 return record_output
@@ -314,7 +339,7 @@ class Database:
                 "tax": f"{i.tax:,.2f}",
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
-                "cost": f"{i.cost:,.2f}",
+                "cost": f"{0 if self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar() is None else self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar():,.2f}",
             }
             for i in records
         ]
@@ -331,15 +356,28 @@ class Database:
         charge_id,
         status_id,
         payment,
-        cost,
         balance_payment,
     ):
         i = self.db.session.execute(
             self.db.select(Project).where(Project.id == _id)
         ).scalar()
-        profit = payment - cost
-        profit_rate = round(profit / payment, 2)
         tax = payment * 0.06
+        profit = (
+            payment
+            - (
+                0
+                if self.db.session.query(func.sum(ProjectCost.cost))
+                .filter(ProjectCost.id == i.id)
+                .scalar()
+                is None
+                else self.db.session.query(func.sum(ProjectCost.cost))
+                .filter(ProjectCost.id == i.id)
+                .scalar()
+            )
+            - tax
+        )
+        profit_rate = round(profit / payment, 2)
+
         i.name = name
         i.start_time = start_time
         i.end_time = end_time
@@ -348,7 +386,6 @@ class Database:
         i.charge_id = charge_id
         i.balance_payment = balance_payment
         i.payment = payment
-        i.cost = cost
         i.profit = profit
         i.profit_rate = profit_rate
         i.tax = tax
@@ -408,6 +445,10 @@ class Database:
         admin_list = self.get_administrator()
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
+
+    def add_cost(self, _id, name, cost, remark=None):
+        pass
+        # TODO
 
     def out_data(self):
         records = (

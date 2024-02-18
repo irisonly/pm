@@ -113,7 +113,7 @@ class ProjectParser:
         self.parser.add_argument("charge_id", type=int, required=True)
         self.parser.add_argument("status_id", type=int, required=True)
         self.parser.add_argument("payment", type=float, required=True)
-        self.parser.add_argument("cost", type=float, required=True)
+        self.parser.add_argument("cost", type=float, required=False)
         self.parser.add_argument("balance_payment", type=float, required=True)
 
     def output(self):
@@ -214,7 +214,6 @@ class ProjectDetail(Resource):
             data["charge_id"],
             data["status_id"],
             data["payment"],
-            data["cost"],
             data["balance_payment"],
         ):
             return {"response": f"successful add project {data['name']}"}
@@ -244,7 +243,6 @@ class ProjectDetail(Resource):
             data["charge_id"],
             data["status_id"],
             data["payment"],
-            data["cost"],
             data["balance_payment"],
         ):
             return {"response": f"successful update project {data['name']}"}
@@ -266,6 +264,11 @@ class DashBoard(Resource):
 class Excel(Resource):
     def get(self):
         return database.out_data()
+
+
+class Cost(Resource):
+    def post(self):
+        pass
 
 
 @app.route("/")
