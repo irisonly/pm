@@ -216,4 +216,23 @@ fetch("https://projectapi.mad-sea.com/type", {
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("query_form").addEventListener("submit", submit_form);
   document.getElementById("query_form").addEventListener("reset", reset_form);
+  document.getElementById("excel").addEventListener("click", e => {
+    e.preventDefault();
+    fetch("https://projectapi.mad-sea.com/excel", {
+      method: "GET",
+    })
+      .then(response => {
+        return response.blob();
+      }) // 将响应转换为JSON
+      .then(data => {
+        console.log(data);
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "project.xlsx";
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch(error => console.error("请求失败:", error));
+  });
 });
