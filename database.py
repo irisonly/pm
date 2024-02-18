@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, Float, String, ForeignKey, exc, and_, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
-
+import pandas
+from flask import send_file
 
 
 class Base(DeclarativeBase):
@@ -407,3 +408,43 @@ class Database:
         admin_list = self.get_administrator()
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
+
+    def out_data(self):
+        records = (
+            self.db.session.execute(self.db.select(Project).order_by(Project.id))
+            .scalars()
+            .all()
+        )
+        print(records)
+        dataframe = pandas.DataFrame(
+            [
+                (
+                    i.id,
+                    i.name,
+                    i.payment,
+                    i.cost,
+                    i.balance_payment,
+                    i.tax,
+                    i.profit,
+                    i.profit_rate,
+                    i.start_time,
+                    i.end_time,
+                )
+                for i in records
+            ],
+            columns=[
+                "项目编号",
+                "项目名称",
+                "项目金额",
+                "项目成本",
+                "项目尾款",
+                "项目税款",
+                "项目利润",
+                "项目利润率",
+                "项目开始时间",
+                "项目结束时间",
+            ],
+        )
+        excel_name = "output.xlsx"
+        dataframe.to_excel(excel_name, index=False)
+        return send_file(excel_name, as_attachment=True)

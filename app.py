@@ -4,13 +4,14 @@ from flask_jwt_extended import (
     jwt_required,
     create_access_token,
     create_refresh_token,
-    get_jwt_identity,get_jwt
+    get_jwt_identity,
+    get_jwt,
 )
 from flask_restful import Resource, Api, reqparse
 from database import Database
 from flask_cors import CORS
 from datetime import timedelta
-from werkzeug.security import generate_password_hash,check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)  # 创建 Flask 应用实例
 app.config["SQLALCHEMY_DATABASE_URI"] = (
@@ -43,7 +44,9 @@ class Admin(Resource):
         data = request.get_json()
         user_name = data["user_name"]
         password = data["password"]
-        password_hash = generate_password_hash(password,method="pbkdf2:sha256",salt_length=8)
+        password_hash = generate_password_hash(
+            password, method="pbkdf2:sha256", salt_length=8
+        )
         if database.add_administrator(user_name, password_hash):
             return {"response": f"successful add admin {data['user_name']}"}
         return {"response": f"fail to add admin"}
@@ -55,22 +58,22 @@ class Admin(Resource):
         return {"response": "no admin"}
 
 
-
 class Login(Resource):
     def post(self):
         data = request.get_json()
         user_name = data["user_name"]
         password = data["password"]
         admin_mapping = database.administrator_mapping()
-        if (
-            user_name in admin_mapping
-            and check_password_hash(admin_mapping[user_name]["password"],password)
+        if user_name in admin_mapping and check_password_hash(
+            admin_mapping[user_name]["password"], password
         ):
-            if admin_mapping[user_name]['id']==1:
-                additional_claims = {'role':'admin'}
+            if admin_mapping[user_name]["id"] == 1:
+                additional_claims = {"role": "admin"}
             else:
-                additional_claims = {'role':'user'}
-            access_token = create_access_token(admin_mapping[user_name]["id"],additional_claims=additional_claims)
+                additional_claims = {"role": "user"}
+            access_token = create_access_token(
+                admin_mapping[user_name]["id"], additional_claims=additional_claims
+            )
             refresh_token = create_refresh_token(admin_mapping[user_name]["id"])
             return {
                 "response": {
@@ -259,9 +262,16 @@ class DashBoard(Resource):
     def get(self):
         return {"response": database.count_sum()}
 
-@app.route('/')
+
+class Excel(Resource):
+    def get(self):
+        return database.out_data()
+
+
+@app.route("/")
 def home():
-    return 'API engine has launched'
+    return "API engine has launched"
+
 
 api.add_resource(Charge, "/charge")  # 将 Charge 资源注册
 api.add_resource(ProjectType, "/type")  # 将 ProjectType 资源注册到 /type 路径
@@ -271,6 +281,7 @@ api.add_resource(ProjectDetail, "/project")
 api.add_resource(DashBoard, "/dashboard")
 api.add_resource(Admin, "/admin")
 api.add_resource(Login, "/login")
+api.add_resource(Excel, "/excel")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口
