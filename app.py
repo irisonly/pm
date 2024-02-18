@@ -97,6 +97,8 @@ class Parser:
         self.parser = reqparse.RequestParser()  # 创建请求解析器
         self.parser.add_argument("name", type=str, required=True)  # 添加请求参数
         self.parser.add_argument("id", type=int, required=False)
+        self.parser.add_argument("level", type=int, required=False)
+        self.parser.add_argument("salary", type=float, required=False)
 
     def output(self):
         return self.parser.parse_args()  # 解析并返回请求参数
@@ -110,7 +112,8 @@ class ProjectParser:
         self.parser.add_argument("start_time", type=str, required=True)
         self.parser.add_argument("end_time", type=str, required=True)
         self.parser.add_argument("type_id", type=int, required=True)
-        self.parser.add_argument("charge_id", type=int, required=True)
+        self.parser.add_argument("m_id_list", type=int, action="append", required=False)
+        self.parser.add_argument("p_id_list", type=int, action="append", required=False)
         self.parser.add_argument("status_id", type=int, required=True)
         self.parser.add_argument("payment", type=float, required=True)
         self.parser.add_argument("cost", type=float, required=False)
@@ -124,7 +127,7 @@ class Charge(Resource):
     def post(self):
         parser = Parser()
         data = parser.output()
-        if database.add_charge(data["name"]):
+        if database.add_charge(data["name"], data["level"], data["salary"]):
             return {"response": f"successful add charger {data['name']}"}
         return {"response": f"fail to add charger"}
 
@@ -141,6 +144,13 @@ class Charge(Resource):
         if database.delete_charge(data["name"]):
             return {"response": f"successful delete charger {data['name']}"}
         return {"response": f"fail to delete charger"}
+
+    def put(self):
+        data = request.get_json()
+        res = database.modify_charge(data["name"], data["level"], data["salary"])
+        if res:
+            return {"response": "successful modify the charger"}
+        return {"response": "fail to modify the charger"}
 
 
 class ProjectType(Resource):
@@ -202,7 +212,7 @@ class ProjectList(Resource):
 
 
 class ProjectDetail(Resource):
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         parser = ProjectParser()
         data = parser.output()
@@ -211,7 +221,8 @@ class ProjectDetail(Resource):
             data["start_time"],
             data["end_time"],
             data["type_id"],
-            data["charge_id"],
+            data["m_id_list"],
+            data["p_id_list"],
             data["status_id"],
             data["payment"],
             data["balance_payment"],
@@ -240,7 +251,8 @@ class ProjectDetail(Resource):
             data["start_time"],
             data["end_time"],
             data["type_id"],
-            data["charge_id"],
+            data["m_id_list"],
+            data["p_id_list"],
             data["status_id"],
             data["payment"],
             data["balance_payment"],
@@ -268,7 +280,25 @@ class Excel(Resource):
 
 class Cost(Resource):
     def post(self):
-        pass
+        data = request.get_json()
+        res = database.add_cost(
+            data["name"], data["project_id"], data["name"], data["cost"], data["remark"]
+        )
+        if res:
+            return {"response": res}
+
+    def get(self):
+        res = database.get_cost()
+        if res:
+            return {"response": res}
+
+
+class Level(Resource):
+    def post(self):
+        data = request.get_json()
+        res = database.add_level(data["name"])
+        if res:
+            return {"response": res}
 
 
 @app.route("/")
@@ -285,6 +315,8 @@ api.add_resource(DashBoard, "/dashboard")
 api.add_resource(Admin, "/admin")
 api.add_resource(Login, "/login")
 api.add_resource(Excel, "/excel")
+api.add_resource(Cost, "/cost")
+api.add_resource(Level, "/level")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口

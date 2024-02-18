@@ -1,8 +1,21 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Integer, Float, String, ForeignKey, exc, and_, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
-import pandas
+from sqlalchemy import (
+    Integer,
+    Float,
+    String,
+    ForeignKey,
+    exc,
+    and_,
+    func,
+)
+from sqlalchemy.orm import (
+    Mapped,
+    mapped_column,
+    relationship,
+    DeclarativeBase,
+)
 from flask import send_file
+import pandas
 
 
 class Base(DeclarativeBase):
@@ -10,6 +23,22 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
+
+project_charge_association = db.Table(
+    "project_charge_link",
+    db.Column("project_id", Integer, ForeignKey("project.id"), primary_key=True),
+    db.Column(
+        "p_charge_id", Integer, ForeignKey("project_charge.id"), primary_key=True
+    ),
+)
+
+project_charge_association_m = db.Table(
+    "project_charge_link_m",
+    db.Column("project_id", Integer, ForeignKey("project.id"), primary_key=True),
+    db.Column(
+        "m_charge_id", Integer, ForeignKey("project_charge.id"), primary_key=True
+    ),
+)
 
 
 class Admin(db.Model):
@@ -30,13 +59,30 @@ class ProjectType(db.Model):
     related_project = relationship("Project", backref="type_name")
 
 
+# TODO
 class ProjectCharge(db.Model):
     __tablename__ = "project_charge"
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, unique=True, nullable=False
     )
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    related_project = relationship("Project", backref="charge_name")
+    level: Mapped[int] = mapped_column(Integer, ForeignKey("level.id"), nullable=False)
+    salary: Mapped[float] = mapped_column(Float, nullable=False)
+    m_projects = relationship(
+        "Project", secondary=project_charge_association_m, back_populates="m_charges"
+    )
+    p_projects = relationship(
+        "Project", secondary=project_charge_association, back_populates="p_charges"
+    )
+
+
+class Level(db.Model):
+    __tablename__ = "level"
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, unique=True, nullable=False
+    )
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    related_charge = relationship("ProjectCharge", backref="level_name")
 
 
 class ProjectStatus(db.Model):
@@ -48,6 +94,7 @@ class ProjectStatus(db.Model):
     related_project = relationship("Project", backref="status_name")
 
 
+# TODO
 class Project(db.Model):
     __tablename__ = "project"
     id: Mapped[int] = mapped_column(
@@ -63,15 +110,22 @@ class Project(db.Model):
     tax: Mapped[float] = mapped_column(Float, nullable=False)
     balance_payment: Mapped[float] = mapped_column(Float, nullable=False)
     profit: Mapped[float] = mapped_column(Float, nullable=False)
-    charge_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("project_charge.id"), nullable=False
+    m_charges = relationship(
+        "ProjectCharge",
+        secondary=project_charge_association_m,
+        back_populates="m_projects",
+    )
+    p_charges = relationship(
+        "ProjectCharge",
+        secondary=project_charge_association,
+        back_populates="p_projects",
     )
     start_time: Mapped[str] = mapped_column(String, nullable=False)
     end_time: Mapped[str] = mapped_column(String, nullable=False)
     status_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("project_status.id"), nullable=False
     )
-    relationship("ProjectCost", backref="total_cost")
+    project_cost = relationship("ProjectCost", backref="total_cost")
 
 
 class ProjectCost(db.Model):
@@ -94,8 +148,8 @@ class Database:
     def create_table(self):
         self.db.create_all()
 
-    def add_charge(self, name):
-        record = ProjectCharge(name=name)
+    def add_charge(self, name, level, salary):
+        record = ProjectCharge(name=name, level=level, salary=salary)
         self.db.session.add(record)
         try:
             self.db.session.commit()
@@ -105,7 +159,7 @@ class Database:
             return True
 
     def get_charge(self, name=None):
-        if name is None:
+        if not name:
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectCharge).order_by(ProjectCharge.id)
@@ -113,15 +167,41 @@ class Database:
                 .scalars()
                 .all()
             )
+            print(records)
             if records:
-                records_output = [{"id": i.id, "name": i.name} for i in records]
+                records_output = [
+                    {
+                        "id": i.id,
+                        "name": i.name,
+                        "level": i.level_name.name,
+                        "salary": i.salary,
+                    }
+                    for i in records
+                ]
                 return records_output
         record = self.db.session.execute(
             self.db.select(ProjectCharge).where(ProjectCharge.name == name)
         ).scalar()
         if record is not None:
-            record_output = {"id": record.id, "name": record.name}
+            record_output = {
+                "id": record.id,
+                "name": record.name,
+                "level": record.level_name.name,
+                "salary": record.salary,
+            }
             return record_output
+
+    def modify_charge(self, name, level, salary):
+        record = self.db.session.execute(
+            self.db.select(ProjectCharge).where(ProjectCharge.name == name)
+        ).scalar()
+        if record is not None:
+            record.name = name
+            record.level = level
+            record.salary = salary
+            self.db.session.commit()
+            return True
+        return False
 
     def delete_charge(self, name):
         record = self.db.session.execute(
@@ -217,7 +297,8 @@ class Database:
         start_time,
         end_time,
         type_id,
-        charge_id,
+        m_id_list,
+        p_id_list,
         status_id,
         payment,
         balance_payment,
@@ -232,7 +313,6 @@ class Database:
             end_time=end_time,
             type_id=type_id,
             status_id=status_id,
-            charge_id=charge_id,
             profit=profit,
             profit_rate=profit_rate,
             tax=tax,
@@ -242,10 +322,12 @@ class Database:
         )
         self.db.session.add(record)
         try:
+            self.db.session.flush()
             self.db.session.commit()
         except exc.IntegrityError:
             return False
         else:
+            self.collect_charger_data(m_id_list, p_id_list, record)
             return True
 
     def get_project_list(self):
@@ -265,13 +347,20 @@ class Database:
                 "end_time": i.end_time,
                 "type_id": i.type_name.name,
                 "status_id": i.status_name.name,
-                "charge_id": i.charge_name.name,
+                "m_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.m_charges
+                ],
+                "p_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.p_charges
+                ],
                 "profit": f"{i.profit:,.2f}",
                 "profit_rate": f"{i.profit_rate:.2%}",
                 "tax": f"{i.tax:,.2f}",
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
-                "cost": f"{0 if self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar() is None else self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar():,.2f}",
+                "cost": f"{i.cost:,.2f}",
             }
             for i in records
         ]
@@ -292,22 +381,20 @@ class Database:
                 "end_time": i.end_time,
                 "type_id": i.type_id,
                 "status_id": i.status_id,
-                "charge_id": i.charge_id,
+                "m_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.m_charges
+                ],
+                "p_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.p_charges
+                ],
                 "profit": i.profit,
                 "profit_rate": i.profit_rate,
                 "tax": i.tax,
                 "balance_payment": i.balance_payment,
                 "payment": i.payment,
-                "cost": (
-                    0
-                    if self.db.session.query(func.sum(ProjectCost.cost))
-                    .filter(ProjectCost.id == i.id)
-                    .scalar()
-                    is None
-                    else self.db.session.query(func.sum(ProjectCost.cost))
-                    .filter(ProjectCost.id == i.id)
-                    .scalar()
-                ),
+                "cost": i.cost,
             }
             if record_output:
                 return record_output
@@ -333,13 +420,20 @@ class Database:
                 "end_time": i.end_time,
                 "type_id": i.type_name.name,
                 "status_id": i.status_name.name,
-                "charge_id": i.charge_name.name,
+                "m_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.m_charges
+                ],
+                "p_charges": [
+                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    for c in i.p_charges
+                ],
                 "profit": f"{i.profit:,.2f}",
                 "profit_rate": f"{i.profit_rate:.2%}",
                 "tax": f"{i.tax:,.2f}",
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
-                "cost": f"{0 if self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar() is None else self.db.session.query(func.sum(ProjectCost.cost)).filter(ProjectCost.id == i.id).scalar():,.2f}",
+                "cost": f"{i.cost:,.2f}",
             }
             for i in records
         ]
@@ -353,7 +447,8 @@ class Database:
         start_time,
         end_time,
         type_id,
-        charge_id,
+        m_id_list,
+        p_id_list,
         status_id,
         payment,
         balance_payment,
@@ -362,20 +457,7 @@ class Database:
             self.db.select(Project).where(Project.id == _id)
         ).scalar()
         tax = payment * 0.06
-        profit = (
-            payment
-            - (
-                0
-                if self.db.session.query(func.sum(ProjectCost.cost))
-                .filter(ProjectCost.id == i.id)
-                .scalar()
-                is None
-                else self.db.session.query(func.sum(ProjectCost.cost))
-                .filter(ProjectCost.id == i.id)
-                .scalar()
-            )
-            - tax
-        )
+        profit = payment - i.cost - tax
         profit_rate = round(profit / payment, 2)
 
         i.name = name
@@ -383,17 +465,18 @@ class Database:
         i.end_time = end_time
         i.type_id = type_id
         i.status_id = status_id
-        i.charge_id = charge_id
         i.balance_payment = balance_payment
         i.payment = payment
         i.profit = profit
         i.profit_rate = profit_rate
         i.tax = tax
         try:
+            self.db.session.flush()
             self.db.session.commit()
         except exc.IntegrityError:
             return False
         else:
+            self.collect_charger_data(m_id_list, p_id_list, i)
             return True
 
     def delete_project(self, _id):
@@ -446,9 +529,53 @@ class Database:
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
 
-    def add_cost(self, _id, name, cost, remark=None):
-        pass
-        # TODO
+    def add_cost(self, _id, project_id, name, cost, remark=None):
+        record = ProjectCost(name=name, project_id=project_id, cost=cost, remark=remark)
+        self.db.session.add(record)
+        try:
+            self.db.session.flush()
+            self.db.session.commit()
+        except exc.IntegrityError:
+            return False
+        else:
+            # 更新项目成本，利润和利润率
+            self.update_project_cost(project_id, cost)
+            return {
+                "id": record.id,
+                "project_id": record.project_id,
+                "name": record.name,
+                "cost": record.cost,
+                "remark": record.remark,
+            }
+
+    def update_project_cost(self, _id, cost):
+        record = self.db.session.execute(
+            self.db.select(Project).where(Project.id == _id)
+        ).scalar()
+        record.cost = record.cost + cost
+        record.profit = record.profit - cost
+        record.profit_rate = round(record.profit / record.payment, 2)
+        self.db.session.commit()
+
+    def get_cost(self):
+        records = (
+            self.db.session.execute(
+                self.db.select(ProjectCost).order_by(ProjectCost.id)
+            )
+            .scalars()
+            .all()
+        )
+        if len(records) > 0:
+            return [
+                {
+                    "id": record.id,
+                    "project_id": record.project_id,
+                    "name": record.name,
+                    "cost": record.cost,
+                    "remark": record.remark,
+                }
+                for record in records
+            ]
 
     def out_data(self):
         records = (
@@ -489,3 +616,30 @@ class Database:
         excel_name = "output.xlsx"
         dataframe.to_excel(excel_name, index=False)
         return send_file(excel_name, as_attachment=True)
+
+    def add_level(self, name):
+        record = Level(name=name)
+        self.db.session.add(record)
+        try:
+            self.db.session.flush()
+            self.db.session.commit()
+        except exc.IntegrityError:
+            return False
+        else:
+            return {"id": record.id, "name": record.name}
+
+    def collect_charger_data(self, m_id_list, p_id_list, project):
+        project.m_charges = []
+        project.p_charges = []
+        self.db.session.commit()
+        for i in m_id_list:
+            record = self.db.session.execute(
+                self.db.select(ProjectCharge).where(ProjectCharge.id == i)
+            ).scalar()
+            project.m_charges.append(record)
+        for i in p_id_list:
+            record = self.db.session.execute(
+                self.db.select(ProjectCharge).where(ProjectCharge.id == i)
+            ).scalar()
+            project.p_charges.append(record)
+        self.db.session.commit()
