@@ -263,7 +263,7 @@ class DashBoard(Resource):
 def home():
     return 'API engine has launched'
 
-api.add_resource(Charge, "/charge")  # 将 Charge 资源注册到 /charge 路径
+api.add_resource(Charge, "/charge")  # 将 Charge 资源注册
 api.add_resource(ProjectType, "/type")  # 将 ProjectType 资源注册到 /type 路径
 api.add_resource(ProjectStatus, "/status")  # 将 ProjectStatus 资源注册到 /status 路径
 api.add_resource(ProjectList, "/projectlist")
