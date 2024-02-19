@@ -22,6 +22,7 @@ class Base(DeclarativeBase):
     pass
 
 
+# TODO
 db = SQLAlchemy(model_class=Base)
 
 project_charge_association = db.Table(
@@ -31,7 +32,7 @@ project_charge_association = db.Table(
         "p_charge_id", Integer, ForeignKey("project_charge.id"), primary_key=True
     ),
 )
-
+# TODO
 project_charge_association_m = db.Table(
     "project_charge_link_m",
     db.Column("project_id", Integer, ForeignKey("project.id"), primary_key=True),
