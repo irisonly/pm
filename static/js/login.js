@@ -1,3 +1,5 @@
+import { END_POINT } from "./config.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
@@ -5,12 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", e => {
     e.preventDefault();
     const form_data = new FormData(form);
-    form_api = {};
+    const form_api = {};
     form_data.forEach((value, key) => {
       form_api[key] = value;
     });
     console.log(form_api);
-    fetch("https://projectapi.mad-sea.com/login", {
+    fetch(END_POINT + "/login", {
       method: "POST", // 指定请求方法为 POST
       headers: {
         // 指定发送的数据类型为 JSON
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(error => {
         console.error("Error:", error);
-        alert("项目创建失败，请检查");
+        alert("登录失败，请重试");
       });
   });
 });

@@ -344,8 +344,8 @@ class Database:
             {
                 "id": i.id,
                 "name": i.name,
-                "start_time": i.start_time,
-                "end_time": i.end_time,
+                "start_time": i.start_time[:10],
+                "end_time": i.end_time[:10],
                 "type_id": i.type_name.name,
                 "status_id": i.status_name.name,
                 "m_charges": [
@@ -368,6 +368,7 @@ class Database:
         if records_output:
             return records_output
 
+    # TODO
     def get_project(self, name=None, _id=None, charge_id=None, type_id=None):
         conditions = []
         if _id is not None:
@@ -496,10 +497,12 @@ class Database:
         sum_of_balance_payment = self.db.session.query(
             func.sum(Project.balance_payment)
         ).scalar()
+        sum_of_salary = self.db.session.query(func.sum(ProjectCharge.salary)).scalar()
         return {
             "sum_of_payment": f"{sum_of_payment:,.2f}",
             "sum_of_profit": f"{sum_of_profit:,.2f}",
             "sum_of_balance_payment": f"{sum_of_balance_payment:,.2f}",
+            "sum_of_salary": f"{sum_of_salary:,.2f}",
         }
 
     def add_administrator(self, user_name, password):
@@ -578,6 +581,16 @@ class Database:
                 for record in records
             ]
 
+    def delete_cost(self, id):
+        record = self.db.session.execute(
+            self.db.select(ProjectCost).where(ProjectCost.id == id)
+        ).scalar()
+        if record is not None:
+            self.db.session.delete(record)
+            self.db.session.commit()
+            return True
+        return False
+
     def out_data(self):
         records = (
             self.db.session.execute(self.db.select(Project).order_by(Project.id))
@@ -629,18 +642,29 @@ class Database:
         else:
             return {"id": record.id, "name": record.name}
 
+    def get_level(self):
+        records = (
+            self.db.session.execute(self.db.select(Level).order_by(Level.id))
+            .scalars()
+            .all()
+        )
+        if len(records) > 0:
+            return [{"id": record.id, "name": record.name} for record in records]
+
     def collect_charger_data(self, m_id_list, p_id_list, project):
         project.m_charges = []
         project.p_charges = []
         self.db.session.commit()
-        for i in m_id_list:
-            record = self.db.session.execute(
-                self.db.select(ProjectCharge).where(ProjectCharge.id == i)
-            ).scalar()
-            project.m_charges.append(record)
-        for i in p_id_list:
-            record = self.db.session.execute(
-                self.db.select(ProjectCharge).where(ProjectCharge.id == i)
-            ).scalar()
-            project.p_charges.append(record)
+        if m_id_list:
+            for i in m_id_list:
+                record = self.db.session.execute(
+                    self.db.select(ProjectCharge).where(ProjectCharge.id == i)
+                ).scalar()
+                project.m_charges.append(record)
+        if p_id_list:
+            for i in p_id_list:
+                record = self.db.session.execute(
+                    self.db.select(ProjectCharge).where(ProjectCharge.id == i)
+                ).scalar()
+                project.p_charges.append(record)
         self.db.session.commit()

@@ -1,3 +1,5 @@
+import { END_POINT } from "./config.js";
+
 function list_render(data) {
   if (Array.isArray(data.response)) {
     const container = document.getElementById("container");
@@ -15,7 +17,6 @@ function list_render(data) {
       name_edit.id = element.id;
       name_edit.textContent = element.name;
       name_edit.href = "./detail.html?id=" + element.id;
-      // name_edit.addEventListener("click", click);
       name_edit.className = "project_name";
       if (name_edit.innerText.length > 10) {
         name_edit.innerText = name_edit.innerText.slice(0, 10);
@@ -43,8 +44,19 @@ function list_render(data) {
       profit_rate.textContent = element.profit_rate;
       data_list.appendChild(profit_rate);
       const charge_id = document.createElement("li");
-      charge_id.textContent = element.charge_id;
+      let charge_id_text = "";
+      element.m_charges.forEach(element => {
+        charge_id_text += element.charge + " ";
+      });
+      charge_id.textContent = charge_id_text;
       data_list.appendChild(charge_id);
+      const charge_id_p = document.createElement("li");
+      let charge_id_text_p = "";
+      element.p_charges.forEach(element => {
+        charge_id_text_p += element.charge + " ";
+      });
+      charge_id_p.textContent = charge_id_text_p;
+      data_list.appendChild(charge_id_p);
       const start_time = document.createElement("li");
       start_time.textContent = element.start_time;
       data_list.appendChild(start_time);
@@ -74,12 +86,18 @@ function dashboard_render(data) {
   sum_of_balance_payment_title.textContent = "应收账款";
   const sum_of_balance_payment = document.createElement("li");
   sum_of_balance_payment.textContent = response.sum_of_balance_payment;
+  const sum_of_salary_title = document.createElement("li");
+  sum_of_salary_title.textContent = "总人员成本";
+  const sum_of_salary = document.createElement("li");
+  sum_of_salary.textContent = response.sum_of_salary;
   dash_list.appendChild(sum_of_payment_title);
   dash_list.appendChild(sum_of_payment);
   dash_list.appendChild(sum_of_profit_title);
   dash_list.appendChild(sum_of_profit);
   dash_list.appendChild(sum_of_balance_payment_title);
   dash_list.appendChild(sum_of_balance_payment);
+  dash_list.appendChild(sum_of_salary_title);
+  dash_list.appendChild(sum_of_salary);
 }
 
 function type_select(data, _id) {
@@ -103,7 +121,7 @@ function submit_form(event) {
   const form = event.target;
   const form_data = new FormData(form);
   const query_string = new URLSearchParams(form_data).toString();
-  fetch("https://projectapi.mad-sea.com/project?id&" + query_string, {
+  fetch(END_POINT + "/project?id&" + query_string, {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
@@ -116,7 +134,7 @@ function submit_form(event) {
 
 function reset_form(event) {
   event.preventDefault();
-  fetch("https://projectapi.mad-sea.com/projectlist", {
+  fetch(END_POINT + "/projectlist", {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
@@ -137,9 +155,7 @@ function reset_query() {
 function click(event) {
   event.preventDefault();
   const id = parseInt(event.target.id, 10);
-  fetch(
-    "https://projectapi.mad-sea.com/project?name&charge_id&type_id&id=" + id
-  )
+  fetch(END_POINT + "/project?name&charge_id&type_id&id=" + id)
     .then(response => response.json()) // 将响应转换为JSON
     .then(data => {
       console.log(data);
@@ -154,7 +170,7 @@ function get_token() {
 
 function refresh_token() {
   refresh_token = localStorage.getItem("refresh_token");
-  fetch("https://projectapi.mad-sea.com/refresh", {
+  fetch(END_POINT + "/refresh", {
     method: "POST", // 指定请求方法为 POST
     headers: {
       // 指定发送的数据类型为 JSON
@@ -173,7 +189,7 @@ function refresh_token() {
     });
 }
 
-fetch("https://projectapi.mad-sea.com/projectlist", {
+fetch(END_POINT + "/projectlist", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -186,7 +202,7 @@ fetch("https://projectapi.mad-sea.com/projectlist", {
     window.location.href = "./login.html";
   });
 
-fetch("https://projectapi.mad-sea.com/dashboard", {
+fetch(END_POINT + "/dashboard", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -199,14 +215,14 @@ fetch("https://projectapi.mad-sea.com/dashboard", {
     window.location.href = "./login.html";
   });
 
-fetch("https://projectapi.mad-sea.com/charge")
+fetch(END_POINT + "/charge")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "charge");
   })
   .catch(error => console.error("请求失败:", error));
 
-fetch("https://projectapi.mad-sea.com/type", {
+fetch(END_POINT + "/type", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -221,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("query_form").addEventListener("reset", reset_form);
   document.getElementById("excel").addEventListener("click", e => {
     e.preventDefault();
-    fetch("https://projectapi.mad-sea.com/excel", {
+    fetch(END_POINT + "/excel", {
       method: "GET",
     })
       .then(response => {
