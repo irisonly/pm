@@ -64,6 +64,7 @@ class Login(Resource):
         user_name = data["user_name"]
         password = data["password"]
         admin_mapping = database.administrator_mapping()
+        print('admin_mapping')
         if user_name in admin_mapping and check_password_hash(
             admin_mapping[user_name]["password"], password
         ):

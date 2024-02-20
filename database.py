@@ -530,6 +530,7 @@ class Database:
 
     def administrator_mapping(self):
         admin_list = self.get_administrator()
+        print("admin_list")
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
 
