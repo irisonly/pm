@@ -64,7 +64,7 @@ class Login(Resource):
         user_name = data["user_name"]
         password = data["password"]
         admin_mapping = database.administrator_mapping()
-        print('admin_mapping')
+        print("admin_mapping")
         if user_name in admin_mapping and check_password_hash(
             admin_mapping[user_name]["password"], password
         ):
@@ -236,7 +236,8 @@ class ProjectDetail(Resource):
         query = database.get_project(
             name=None if request.args.get("name") == "" else request.args.get("name"),
             _id=transfer_zero(request.args.get("id")),
-            charge_id=transfer_zero(request.args.get("charge_id")),
+            charge_m_id=transfer_zero(request.args.get("charge_m_id")),
+            charge_p_id=transfer_zero(request.args.get("charge_p_id")),
             type_id=transfer_zero(request.args.get("type_id")),
         )
         if query is not None:
@@ -289,12 +290,13 @@ class Cost(Resource):
             return {"response": res}
 
     def get(self):
-        res = database.get_cost()
+        _id = request.args.get("id")
+        res = database.get_cost(_id)
         if res:
             return {"response": res}
 
     def delete(self):
-        data = request.args.get("id")
+        data = request.get_json()["id"]
         res = database.delete_cost(data)
         if res:
             return {"response": f"successful delete the cost"}

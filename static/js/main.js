@@ -32,8 +32,12 @@ function list_render(data) {
       payment.textContent = element.payment;
       data_list.appendChild(payment);
       const cost = document.createElement("li");
-      cost.textContent = element.cost;
       data_list.appendChild(cost);
+      const cost_edit = document.createElement("a");
+      cost_edit.id = element.id;
+      cost_edit.textContent = element.cost;
+      cost_edit.href = "./cost.html?id=" + element.id;
+      cost.appendChild(cost_edit);
       const tax = document.createElement("li");
       tax.textContent = element.tax;
       data_list.appendChild(tax);
@@ -148,7 +152,8 @@ function reset_form(event) {
 
 function reset_query() {
   document.getElementById("type").selectedIndex = 0;
-  document.getElementById("charge").selectedIndex = 0;
+  document.getElementById("m_charge").selectedIndex = 0;
+  document.getElementById("p_charge").selectedIndex = 0;
   document.getElementById("project_name").value = "";
 }
 
@@ -218,7 +223,14 @@ fetch(END_POINT + "/dashboard", {
 fetch(END_POINT + "/charge")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
-    type_select(data, "charge");
+    type_select(data, "m_charge");
+  })
+  .catch(error => console.error("请求失败:", error));
+
+fetch(END_POINT + "/charge")
+  .then(response => response.json()) // 将响应转换为JSON
+  .then(data => {
+    type_select(data, "p_charge");
   })
   .catch(error => console.error("请求失败:", error));
 

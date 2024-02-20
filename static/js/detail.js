@@ -1,3 +1,5 @@
+import { END_POINT } from "./config.js";
+
 function type_select(data, _id) {
   const response = data.response;
   console.log(response);
@@ -30,7 +32,7 @@ function handle_delete(event) {
   const query_url = new URLSearchParams(query_string);
   const id = { id: query_url.get("id") };
   console.log(event, id);
-  fetch("https://projectapi.mad-sea.com/project", {
+  fetch(END_POINT + "/project", {
     method: "DELETE", // 指定请求方法为 POST
     headers: {
       // 指定发送的数据类型为 JSON
@@ -50,14 +52,14 @@ function handle_delete(event) {
     });
 }
 
-const promise_charge = fetch("https://projectapi.mad-sea.com/charge")
+const promise_charge = fetch(END_POINT + "/charge")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "charge_id");
   })
   .catch(error => console.error("请求失败:", error));
 
-const promise_type = fetch("https://projectapi.mad-sea.com/type", {
+const promise_type = fetch(END_POINT + "/type", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -67,7 +69,7 @@ const promise_type = fetch("https://projectapi.mad-sea.com/type", {
   })
   .catch(error => console.error("请求失败:", error));
 
-const promise_status = fetch("https://projectapi.mad-sea.com/status")
+const promise_status = fetch(END_POINT + "/status")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "status_id");
@@ -81,13 +83,17 @@ Promise.all([promise_charge, promise_status, promise_type])
     const query_url = new URLSearchParams(query_string);
     const id = query_url.get("id");
 
-    fetch("https://projectapi.mad-sea.com/project?name&charge_id&type_id&id=" + id, {
-      method: "GET",
-      headers: { Authorization: "Bearer " + get_token() },
-    })
+    fetch(
+      END_POINT + "/project?name&charge_p_id&type_id&charge_m_id&id=" + id,
+      {
+        method: "GET",
+        headers: { Authorization: "Bearer " + get_token() },
+      }
+    )
       .then(response => response.json()) // 将响应转换为JSON
       .then(data => {
-        original_data = data.response;
+        // console.log(data);
+        const original_data = data["response"];
         console.log(original_data);
         document.getElementById("name").value = original_data.name;
         document.getElementById("payment").value = original_data.payment;
@@ -102,7 +108,7 @@ Promise.all([promise_charge, promise_status, promise_type])
       })
       .catch(error => {
         console.error("请求失败:", error);
-        window.location.href = "./login.html";
+        // window.location.href = "./login.html";
       });
   });
 
@@ -116,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", e => {
     e.preventDefault();
     const form_data = new FormData(form);
-    form_api = {};
+    const form_api = {};
     form_data.forEach((value, key) => {
       form_api[key] = value;
     });
@@ -128,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     form_api["payment"] = parseInt(form_api["payment"], 10);
     form_api["cost"] = parseInt(form_api["cost"], 10);
     console.log(form_api);
-    fetch("https://projectapi.mad-sea.com/project", {
+    fetch(END_POINT + "/project", {
       method: "PUT", // 指定请求方法为 POST
       headers: {
         // 指定发送的数据类型为 JSON

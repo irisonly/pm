@@ -20,6 +20,7 @@
             name="name"
             placeholder="请输入项目名称，支持模糊查询"
             id="project_name"
+            style="width: 200px"
           />
         </div>
 
@@ -28,8 +29,12 @@
           <select id="type" name="type_id"></select>
         </div>
         <div>
-          <label for="">项目负责人</label>
-          <select id="charge" name="charge_id"></select>
+          <label for="">项目管理</label>
+          <select id="m_charge" name="charge_m_id"></select>
+        </div>
+        <div>
+          <label for="">项目专家</label>
+          <select id="p_charge" name="charge_p_id"></select>
         </div>
         <button type="submit">提交筛选</button>
         <button type="reset">重置筛选</button>
@@ -51,8 +56,8 @@
       <li>项目利润率</li>
       <li>项目管理</li>
       <li>项目专家</li>
-      <li>项目开始时间</li>
-      <li>项目结束时间</li>
+      <li>开始时间</li>
+      <li>结束时间</li>
     </ul>
     <div id="container"></div>
   </body>

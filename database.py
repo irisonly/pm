@@ -369,7 +369,9 @@ class Database:
             return records_output
 
     # TODO
-    def get_project(self, name=None, _id=None, charge_id=None, type_id=None):
+    def get_project(
+        self, name=None, _id=None, charge_m_id=None, charge_p_id=None, type_id=None
+    ):
         conditions = []
         if _id is not None:
             conditions.append(Project.id == _id)
@@ -379,8 +381,8 @@ class Database:
             record_output = {
                 "id": i.id,
                 "name": i.name,
-                "start_time": i.start_time,
-                "end_time": i.end_time,
+                "start_time": i.start_time[:10],
+                "end_time": i.end_time[:10],
                 "type_id": i.type_id,
                 "status_id": i.status_id,
                 "m_charges": [
@@ -402,8 +404,12 @@ class Database:
                 return record_output
         if name is not None:
             conditions.append(Project.name.like(f"%{name}%"))
-        if charge_id is not None:
-            conditions.append(Project.charge_id == charge_id)
+        #     TODO
+        if charge_m_id is not None:
+            conditions.append(Project.m_charges.any(ProjectCharge.id == charge_m_id))
+        #     TODO
+        if charge_p_id is not None:
+            conditions.append(Project.p_charges.any(ProjectCharge.id == charge_p_id))
         if type_id is not None:
             conditions.append(Project.type_id == type_id)
         # print(conditions)
@@ -562,14 +568,17 @@ class Database:
         record.profit_rate = round(record.profit / record.payment, 2)
         self.db.session.commit()
 
-    def get_cost(self):
+    def get_cost(self, id):
         records = (
             self.db.session.execute(
-                self.db.select(ProjectCost).order_by(ProjectCost.id)
+                self.db.select(ProjectCost)
+                .where(ProjectCost.project_id == id)
+                .order_by(ProjectCost.id)
             )
             .scalars()
             .all()
         )
+
         if len(records) > 0:
             return [
                 {

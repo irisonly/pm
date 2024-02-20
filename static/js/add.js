@@ -1,3 +1,5 @@
+import { END_POINT } from "./config.js";
+
 function type_select(data, _id) {
   const response = data.response;
   console.log(response);
@@ -25,14 +27,14 @@ function select_default(select_id, default_value) {
   });
 }
 
-const promise_charge = fetch("https://projectapi.mad-sea.com/charge")
+const promise_charge = fetch(END_POINT + "/charge")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "charge_id");
   })
   .catch(error => console.error("请求失败:", error));
 
-const promise_type = fetch("https://projectapi.mad-sea.com/type", {
+const promise_type = fetch(END_POINT + "/type", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -45,7 +47,7 @@ const promise_type = fetch("https://projectapi.mad-sea.com/type", {
     window.location.href = "./login.html";
   });
 
-const promise_status = fetch("https://projectapi.mad-sea.com/status")
+const promise_status = fetch(END_POINT + "/status")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "status_id");
@@ -62,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", e => {
     e.preventDefault();
     const form_data = new FormData(form);
-    form_api = {};
+    const form_api = {};
     form_data.forEach((value, key) => {
       form_api[key] = value;
     });
@@ -73,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     form_api["payment"] = parseInt(form_api["payment"], 10);
     form_api["cost"] = parseInt(form_api["cost"], 10);
     console.log(form_api);
-    fetch("https://projectapi.mad-sea.com/project", {
+    fetch(END_POINT + "/project", {
       method: "POST", // 指定请求方法为 POST
       headers: {
         // 指定发送的数据类型为 JSON

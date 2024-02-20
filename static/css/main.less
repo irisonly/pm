@@ -29,15 +29,19 @@ body {
     justify-content: center;
     align-items: center;
     form {
-      width: 90%;
+      width: 100%;
       display: flex;
       justify-content: space-evenly;
+      label {
+        font-size: 14px;
+        margin-right: 10px;
+      }
       input,
       select {
         border: 1px solid #fad689;
         height: 20px;
-        width: 200px;
-        margin-left: 10px;
+        width: 100px;
+        margin-right: 10px;
       }
       button {
         width: 100px;
@@ -46,6 +50,7 @@ body {
         border-radius: 5px;
         border: none;
         padding: 0;
+        margin-right: 10px;
       }
       a {
         height: 20px;
@@ -66,7 +71,7 @@ body {
     display: flex;
     justify-content: space-between;
     button {
-      width: 200px;
+      width: 100px;
       height: 30px;
       border-radius: 5px;
       border: none;
@@ -81,6 +86,23 @@ body {
       #exit {
         background-color: #fa8989;
         padding: 0;
+      }
+    }
+    form {
+      width: 90%;
+      display: flex;
+      justify-content: left;
+      label {
+        font-size: 14px;
+        margin-right: 20px;
+      }
+      input {
+        height: 20px;
+        width: 200px;
+        margin: 0;
+        padding: 0;
+        border: 1px solid #fad689;
+        margin-right: 20px;
       }
     }
   }
@@ -108,7 +130,8 @@ body {
     width: 50%;
     // margin-top: 100px;
   }
-  #container {
+  #container,
+  #c_container {
     width: 90%;
     display: flex;
     flex-direction: column;
