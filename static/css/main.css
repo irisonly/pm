@@ -207,6 +207,21 @@ body .form_cover #project_form .bg-black {
   background-color: #000000;
   width: 100%;
 }
+body .form_cover .mul {
+  display: flex;
+  flex-wrap: wrap;
+}
+body .form_cover .mul .mul_check {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+body .form_cover .mul .mul_check label {
+  font-size: 14px;
+}
+body .form_cover .mul .mul_check input {
+  height: 20px !important;
+  width: 20px !important;
+}
 body .form_cover .delete {
   height: 50px;
   border-radius: 5px;

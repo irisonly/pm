@@ -30,7 +30,28 @@ function select_default(select_id, default_value) {
 const promise_charge = fetch(END_POINT + "/charge")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
-    type_select(data, "charge_id");
+    const charge_select = document.getElementById("charge_m");
+    data.response.forEach(element => {
+      const opt = document.createElement("input");
+      opt.type = "checkbox";
+      opt.name = "m";
+      opt.value = element.id;
+      charge_select.appendChild(opt);
+      const label = document.createElement("label");
+      label.textContent = element.name;
+      charge_select.appendChild(label);
+    });
+    const charge_p_select = document.getElementById("charge_p");
+    data.response.forEach(element => {
+      const opt = document.createElement("input");
+      opt.type = "checkbox";
+      opt.name = "p";
+      opt.value = element.id;
+      charge_p_select.appendChild(opt);
+      const label = document.createElement("label");
+      label.textContent = element.name;
+      charge_p_select.appendChild(label);
+    });
   })
   .catch(error => console.error("请求失败:", error));
 
@@ -69,11 +90,32 @@ document.addEventListener("DOMContentLoaded", () => {
       form_api[key] = value;
     });
     form_api["type_id"] = parseInt(form_api["type_id"], 10);
-    form_api["charge_id"] = parseInt(form_api["charge_id"], 10);
     form_api["status_id"] = parseInt(form_api["status_id"], 10);
     form_api["balance_payment"] = parseInt(form_api["balance_payment"], 10);
     form_api["payment"] = parseInt(form_api["payment"], 10);
     form_api["cost"] = parseInt(form_api["cost"], 10);
+    var checkboxes = document.getElementsByName("m");
+    var selectedm = [];
+
+    // 遍历多选框，检查是否被选中
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        // 如果选中，将其value添加到selectedFruits数组中
+        selectedm.push(parseInt(checkboxes[i].value, 10));
+      }
+    }
+    var checkboxes = document.getElementsByName("p");
+    var selectedp = [];
+
+    // 遍历多选框，检查是否被选中
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        // 如果选中，将其value添加到selectedFruits数组中
+        selectedp.push(parseInt(checkboxes[i].value, 10));
+      }
+    }
+    form_api["m_id_list"] = selectedm;
+    form_api["p_id_list"] = selectedp;
     console.log(form_api);
     fetch(END_POINT + "/project", {
       method: "POST", // 指定请求方法为 POST

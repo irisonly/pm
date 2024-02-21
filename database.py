@@ -344,8 +344,8 @@ class Database:
             {
                 "id": i.id,
                 "name": i.name,
-                "start_time": i.start_time[:10],
-                "end_time": i.end_time[:10],
+                "start_time": i.start_time,
+                "end_time": i.end_time,
                 "type_id": i.type_name.name,
                 "status_id": i.status_name.name,
                 "m_charges": [
@@ -386,11 +386,21 @@ class Database:
                 "type_id": i.type_id,
                 "status_id": i.status_id,
                 "m_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    {
+                        "id": c.id,
+                        "charge": c.name,
+                        "level": c.level_name.name,
+                        "salary": c.salary,
+                    }
                     for c in i.m_charges
                 ],
                 "p_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    {
+                        "id": c.id,
+                        "charge": c.name,
+                        "level": c.level_name.name,
+                        "salary": c.salary,
+                    }
                     for c in i.p_charges
                 ],
                 "profit": i.profit,
@@ -429,11 +439,21 @@ class Database:
                 "type_id": i.type_name.name,
                 "status_id": i.status_name.name,
                 "m_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    {
+                        "id": c.id,
+                        "charge": c.name,
+                        "level": c.level_name.name,
+                        "salary": c.salary,
+                    }
                     for c in i.m_charges
                 ],
                 "p_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
+                    {
+                        "id": c.id,
+                        "charge": c.name,
+                        "level": c.level_name.name,
+                        "salary": c.salary,
+                    }
                     for c in i.p_charges
                 ],
                 "profit": f"{i.profit:,.2f}",
@@ -613,14 +633,26 @@ class Database:
                 (
                     i.id,
                     i.name,
-                    i.payment,
-                    i.cost,
-                    i.balance_payment,
-                    i.tax,
-                    i.profit,
-                    i.profit_rate,
+                    f"{i.payment:,.2f}",
+                    f"{i.cost:,.2f}",
+                    f"{i.balance_payment:,.2f}",
+                    f"{i.tax:,.2f}",
+                    f"{i.profit:,.2f}",
+                    f"{i.profit_rate:.2%}",
                     i.start_time,
                     i.end_time,
+                    (
+                        [f"{c.name}|{c.level_name.name}" for c in i.m_charges]
+                        if len([f"{c.name}|{c.level_name.name}" for c in i.m_charges])
+                        > 0
+                        else ""
+                    ),
+                    (
+                        [f"{c.name}|{c.level_name.name}" for c in i.p_charges]
+                        if len([f"{c.name}|{c.level_name.name}" for c in i.p_charges])
+                        > 0
+                        else ""
+                    ),
                 )
                 for i in records
             ],
@@ -635,6 +667,8 @@ class Database:
                 "项目利润率",
                 "项目开始时间",
                 "项目结束时间",
+                "项目管理",
+                "项目专家",
             ],
         )
         excel_name = "output.xlsx"
