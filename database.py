@@ -224,8 +224,9 @@ class Database:
         else:
             return True
 
-    def get_type(self, name=None):
-        if name is None:
+    def get_type(self, name=""):
+        if name == "":
+            print("name", name)
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectType).order_by(ProjectType.id)
@@ -233,15 +234,18 @@ class Database:
                 .scalars()
                 .all()
             )
-            if records:
+            print("records", records)
+            if len(records) > 0:
                 records_output = [{"id": i.id, "name": i.name} for i in records]
+                print(records_output)
                 return records_output
-        record = self.db.session.execute(
-            self.db.select(ProjectType).where(ProjectType.name == name)
-        ).scalar()
-        if record is not None:
-            record_output = {"id": record.id, "name": record.name}
-            return record_output
+        else:
+            record = self.db.session.execute(
+                self.db.select(ProjectType).where(ProjectType.name == name)
+            ).scalar()
+            if record is not None:
+                record_output = {"id": record.id, "name": record.name}
+                return record_output
 
     def delete_type(self, name):
         record = self.db.session.execute(
@@ -263,8 +267,8 @@ class Database:
         else:
             return True
 
-    def get_status(self, name=None):
-        if name is None:
+    def get_status(self, name=""):
+        if name == "":
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectStatus).order_by(ProjectStatus.id)
@@ -519,11 +523,16 @@ class Database:
 
     def count_sum(self):
         sum_of_payment = self.db.session.query(func.sum(Project.payment)).scalar()
-        sum_of_profit = self.db.session.query(func.sum(Project.profit)).scalar()
+        sum_of_salary = (
+            self.db.session.query(func.sum(ProjectCharge.salary)).scalar() * 12
+        )
+        sum_of_profit = (
+            self.db.session.query(func.sum(Project.profit)).scalar() - sum_of_salary
+        )
         sum_of_balance_payment = self.db.session.query(
             func.sum(Project.balance_payment)
         ).scalar()
-        sum_of_salary = self.db.session.query(func.sum(ProjectCharge.salary)).scalar()
+
         return {
             "sum_of_payment": f"{sum_of_payment:,.2f}",
             "sum_of_profit": f"{sum_of_profit:,.2f}",

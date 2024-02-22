@@ -55,7 +55,7 @@ const promise_charge = fetch(END_POINT + "/charge")
   })
   .catch(error => console.error("请求失败:", error));
 
-const promise_type = fetch(END_POINT + "/type", {
+const promise_type = fetch(END_POINT + "/type?name=", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
@@ -68,7 +68,7 @@ const promise_type = fetch(END_POINT + "/type", {
     window.location.href = "./login.html";
   });
 
-const promise_status = fetch(END_POINT + "/status")
+const promise_status = fetch(END_POINT + "/status?name=")
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "status_id");

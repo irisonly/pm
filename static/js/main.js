@@ -234,12 +234,13 @@ fetch(END_POINT + "/charge")
   })
   .catch(error => console.error("请求失败:", error));
 
-fetch(END_POINT + "/type", {
+fetch(END_POINT + "/type?name=", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
 })
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
+    // console.log(data);
     type_select(data, "type");
   })
   .catch(error => console.error("请求失败:", error));

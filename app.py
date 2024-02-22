@@ -168,7 +168,7 @@ class ProjectType(Resource):
         data = database.get_type(name)
         if data is not None:
             return {"response": data}
-        return {"response": "no such charger"}
+        return {"response": "no such type"}
 
     def delete(self):
         parser = Parser()
