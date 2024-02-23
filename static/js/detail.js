@@ -43,7 +43,7 @@ function handle_delete(event) {
     .then(response => response.json()) // 解析 JSON 响应
     .then(data => {
       console.log("Success:", id);
-      // alert("项目已经删除");
+      // alert("项目删除成功");
       window.location.href = "./index.html";
     })
     .catch(error => {
@@ -52,7 +52,11 @@ function handle_delete(event) {
     });
 }
 
-const promise_charge = fetch(END_POINT + "/charge")
+const promise_charge = fetch(END_POINT + "/charge",{
+  method: "GET",
+  headers: { Authorization: "Bearer " + get_token() },
+
+})
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     const charge_select = document.getElementById("charge_m");
@@ -118,7 +122,7 @@ Promise.all([promise_charge, promise_status, promise_type])
         console.log(original_data);
         document.getElementById("name").value = original_data.name;
         document.getElementById("payment").value = original_data.payment;
-        document.getElementById("cost").value = original_data.cost;
+        // document.getElementById("cost").value = original_data.cost;
         document.getElementById("balance_payment").value =
           original_data.balance_payment;
         document.getElementById("start_time").value = original_data.start_time;

@@ -132,6 +132,7 @@ class Charge(Resource):
             return {"response": f"successful add charger {data['name']}"}
         return {"response": f"fail to add charger"}
 
+    @jwt_required()
     def get(self):
         name = request.args.get("name")
         data = database.get_charge(name)

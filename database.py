@@ -176,6 +176,8 @@ class Database:
                         "name": i.name,
                         "level": i.level_name.name,
                         "salary": i.salary,
+                        "m_projects": [c.name for c in i.m_projects],
+                        "p_projects": [c.name for c in i.p_projects],
                     }
                     for i in records
                 ]
@@ -625,6 +627,7 @@ class Database:
             self.db.select(ProjectCost).where(ProjectCost.id == id)
         ).scalar()
         if record is not None:
+            record.total_cost.cost -= record.cost
             self.db.session.delete(record)
             self.db.session.commit()
             return True

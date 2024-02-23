@@ -4,11 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../static/css/main.css" />
-    <script type="module" src="../static/js/main.js"></script>
+    <script type="module" src="../static/js/member.js"></script>
     <title>项目管理系统</title>
   </head>
   <body>
-    <div id="dashboard">
+    <ul class="title">
+      <li>人员管理</li>
+      <!-- <a href="./index.html"> <li>返回</li></a> -->
+    </ul>
+    <!-- <div id="dashboard">
       <ul id="dash_list"></ul>
     </div>
     <div id="query_area">
@@ -39,26 +43,44 @@
         <button type="submit">提交筛选</button>
         <button type="reset">重置筛选</button>
       </form>
-    </div>
+    </div> -->
     <div class="button_area">
-      <a href="./add.html"><button class="add">新增项目</button></a>
-      <a href="./member.html"><button>人员管理</button></a>
-      <a id="excel" href="#"><button>导出</button></a>
+      <form action="" method="post" id="cost_form">
+        <label for="">姓名</label>
+        <input type="text" id="name" placeholder="输入员工姓名" name="name" />
+        <label for="">职位</label>
+        <select
+          id="status_id"
+          name="level"
+          style="
+            width: 100px;
+            border: 1px rgb(244, 180, 123) solid;
+            height: 22px;
+            margin-right: 20px;
+          "
+        >
+          <!-- 其他状态选项 -->
+        </select>
+        <label for="">工资</label>
+        <input
+          type="text"
+          id="remark"
+          placeholder="输入员工月工资"
+          name="salary"
+        />
+        <button type="submit" style="background-color: rgb(255, 236, 127)">
+          新增人员
+        </button>
+      </form>
+      <a id="excel" href="./index.html"><button>返回</button></a>
       <a href="./login.html"><button id="exit">登出</button></a>
     </div>
     <ul class="title">
-      <li>项目名称</li>
-      <li>项目类型</li>
-      <li>项目状态</li>
-      <li>项目金额</li>
-      <li>项目成本</li>
-      <li>项目发票</li>
-      <li>项目利润</li>
-      <li>项目利润率</li>
-      <li>项目管理</li>
-      <li>项目专家</li>
-      <li>开始时间</li>
-      <li>结束时间</li>
+      <li>姓名</li>
+      <li>职位</li>
+      <li>工资</li>
+      <li style="width: 500px">作为项目管理</li>
+      <li style="width: 500px">作为项目专家</li>
     </ul>
     <div id="container"></div>
   </body>

@@ -220,14 +220,20 @@ fetch(END_POINT + "/dashboard", {
     window.location.href = "./login.html";
   });
 
-fetch(END_POINT + "/charge")
+fetch(END_POINT + "/charge", {
+  method: "GET",
+  headers: { Authorization: "Bearer " + get_token() },
+})
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "m_charge");
   })
   .catch(error => console.error("请求失败:", error));
 
-fetch(END_POINT + "/charge")
+fetch(END_POINT + "/charge", {
+  method: "GET",
+  headers: { Authorization: "Bearer " + get_token() },
+})
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     type_select(data, "p_charge");

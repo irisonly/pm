@@ -180,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then(response => response.json()) // 解析 JSON 响应
       .then(data => {
+        alert("添加成功");
         console.log("Success:", form_api);
       })
       .catch(error => {

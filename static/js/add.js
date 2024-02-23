@@ -27,10 +27,14 @@ function select_default(select_id, default_value) {
   });
 }
 
-const promise_charge = fetch(END_POINT + "/charge")
+const promise_charge = fetch(END_POINT + "/charge", {
+  method: "GET",
+  headers: { Authorization: "Bearer " + get_token() },
+})
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
     const charge_select = document.getElementById("charge_m");
+    console.log(data.response);
     data.response.forEach(element => {
       const opt = document.createElement("input");
       opt.type = "checkbox";
