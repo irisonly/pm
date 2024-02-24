@@ -141,13 +141,13 @@ class Charge(Resource):
         return {"response": "no such charger"}
 
     def delete(self):
-        parser = Parser()
-        data = parser.output()
-        if database.delete_charge(data["name"]):
-            return {"response": f"successful delete charger {data['name']}"}
+        name = request.args.get("name")
+        if database.delete_charge(name):
+            return {"response": f"successful delete charger {name}"}
         return {"response": f"fail to delete charger"}
 
     def put(self):
+        _id = request.args.get("name")
         data = request.get_json()
         res = database.modify_charge(data["name"], data["level"], data["salary"])
         if res:

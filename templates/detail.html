@@ -8,11 +8,16 @@
     <title>项目管理系统 | 项目详情</title>
   </head>
   <body>
-    <ul class="title">
+    <ul class="title" style="background-color: #9b90c2; color: #ffffff">
       <li>项目修改</li>
-      <a href="./index.html"> <li>返回</li></a>
     </ul>
-    <div class="form_cover">
+    <div class="button_area" style="justify-content: right">
+      <a href="./index.html" style="margin-right: 10px"
+        ><button>返回</button></a
+      >
+      <a href="./login.html"><button id="exit">登出</button></a>
+    </div>
+    <div class="form_cover" style="border: 1px solid #9b90c2">
       <form action="" method="post" id="project_form">
         <!-- 项目名称 -->
         <div>
@@ -93,7 +98,9 @@
           <input type="date" id="end_time" name="end_time" />
         </div>
 
-        <button type="submit">提交修改</button>
+        <button type="submit" style="background-color: #9b90c2; color: #ffffff">
+          提交修改
+        </button>
       </form>
       <button class="delete" id="delete_project">删除项目</button>
     </div>

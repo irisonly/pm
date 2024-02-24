@@ -36,7 +36,7 @@ const promise_type = fetch(END_POINT + "/charge", {
       const name_edit = document.createElement("a");
       name_edit.id = element.id;
       name_edit.textContent = element.name;
-      //   name_edit.href = "./detail.html?id=" + element.id;
+      name_edit.href = "./member_detail.html?name=" + element.name;
       name_edit.className = "project_name";
       name.appendChild(name_edit);
       const position = document.createElement("li");

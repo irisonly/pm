@@ -121,6 +121,7 @@ body .title li {
   line-height: 50px;
   width: 210px;
   text-align: center;
+  font-size: 14px;
 }
 body .bg-green {
   background-color: #89fad6;
@@ -165,7 +166,7 @@ body .form_cover {
   margin: 10px auto;
 }
 body .form_cover #project_form {
-  width: 40%;
+  width: 80%;
   height: 800px;
   margin: 50px 0 0 50px;
   display: flex;
@@ -183,6 +184,9 @@ body .form_cover #project_form div select {
   width: 500px;
   padding: 0;
   margin: 0;
+}
+body .form_cover #project_form div label {
+  font-size: 14px;
 }
 body .form_cover #project_form div select {
   width: 502px;
@@ -227,7 +231,7 @@ body .form_cover .delete {
   border-radius: 5px;
   border: none;
   background-color: #fa8989;
-  width: 40%;
+  width: 80%;
   margin: 0 0 50px 50px;
 }
 body .green {
