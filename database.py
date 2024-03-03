@@ -737,6 +737,4 @@ class Database:
         )
         for idx, row in df.iterrows():
             print(idx, row["name"], row["cost"], row["remark"])
-            self.add_cost(
-                _id, row["name"].astype(str), row["cost"], row["remark"].astype(str)
-            )
+            self.add_cost(_id, str(row["name"]), row["cost"], str(row["remark"]))

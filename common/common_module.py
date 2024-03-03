@@ -47,10 +47,10 @@ class Import(Resource):
         _id = request.args.get("id")
 
         if "file" not in request.files:
-            return
+            return {"msg": "not file"}
         file = request.files["file"]
         if file.filename == "":
-            return
+            return {"msg": "no file name"}
         if file:
             filename = secure_filename(file.filename)
             filepath = os.path.join(UPLOAD_FOLDER, filename)
