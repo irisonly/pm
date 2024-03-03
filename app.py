@@ -6,7 +6,7 @@ from flask_cors import CORS
 from datetime import timedelta
 from admin.admin_module import Admin
 from login.login_module import Login
-from common.common_module import DashBoard, Excel
+from common.common_module import DashBoard, Excel, Import
 from charge.charge_module import Charge
 from project.project_type_module import ProjectType
 from project.project_status_module import ProjectStatus
@@ -48,6 +48,7 @@ api.add_resource(Login, "/login")
 api.add_resource(Excel, "/excel")
 api.add_resource(Cost, "/cost")
 api.add_resource(Level, "/level")
+api.add_resource(Import, "/import")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口

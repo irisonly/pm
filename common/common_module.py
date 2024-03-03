@@ -6,16 +6,12 @@ from flask_jwt_extended import (
 from flask_restful import Resource
 from flask import request
 from database import Database
+from werkzeug.utils import secure_filename
+import os
 
 database = Database()
-
-
-class Refresh(Resource):
-    @jwt_required(refresh=True)
-    def post(self):
-        data = request.get_json()
-        access_token = create_access_token(identity=get_jwt_identity())
-        return {"response": {"access_token": access_token}}
+UPLOAD_FOLDER = "uploaded_files"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def transfer_zero(arg):
@@ -27,6 +23,14 @@ def transfer_zero(arg):
         return int(arg)
 
 
+class Refresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        data = request.get_json()
+        access_token = create_access_token(identity=get_jwt_identity())
+        return {"response": {"access_token": access_token}}
+
+
 class DashBoard(Resource):
     @jwt_required()
     def get(self):
@@ -36,3 +40,19 @@ class DashBoard(Resource):
 class Excel(Resource):
     def get(self):
         return database.out_data()
+
+
+class Import(Resource):
+    def post(self):
+        _id = request.args.get("id")
+
+        if "file" not in request.files:
+            return
+        file = request.files["file"]
+        if file.filename == "":
+            return
+        if file:
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filepath)
+            database.read_file(filepath, _id)

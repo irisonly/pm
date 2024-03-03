@@ -9,7 +9,7 @@ class Cost(Resource):
     def post(self):
         data = request.get_json()
         res = database.add_cost(
-            data["name"], data["project_id"], data["name"], data["cost"], data["remark"]
+            data["project_id"], data["name"], data["cost"], data["remark"]
         )
         if res:
             return {"response": res}

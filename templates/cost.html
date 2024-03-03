@@ -27,6 +27,21 @@
           新增成本
         </button>
       </form>
+
+      <form action="" method="post" enctype="multipart/form-data">
+        <label for="">上传</label>
+        <input type="file" name="file" accept=".xlsx, .xls" id="excelFile" />
+
+        <button
+          type="submit"
+          style="background-color: #33a6b8; color: #ffffff"
+          id="upload_button"
+        >
+          批量上传
+        </button>
+        <!-- <input type="submit" value="Upload" id="upload_button" /> -->
+      </form>
+      <a href="./input.xlsx"><button>模板</button></a>
       <a href="./index.html"><button>返回</button></a>
       <a href="./login.html"><button id="exit">登出</button></a>
     </div>

@@ -571,7 +571,7 @@ class Database:
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
 
-    def add_cost(self, _id, project_id, name, cost, remark=None):
+    def add_cost(self, project_id, name, cost, remark=None):
         record = ProjectCost(name=name, project_id=project_id, cost=cost, remark=remark)
         self.db.session.add(record)
         try:
@@ -724,3 +724,19 @@ class Database:
                 ).scalar()
                 project.p_charges.append(record)
         self.db.session.commit()
+
+    def read_file(self, file, _id):
+        df = pandas.read_excel(file)
+        df.rename(
+            columns={
+                "成本名称(每笔付出的成本为一行)": "name",
+                "成本金额(精确到小数点后2位)": "cost",
+                "备注": "remark",
+            },
+            inplace=True,
+        )
+        for idx, row in df.iterrows():
+            print(idx, row["name"], row["cost"], row["remark"])
+            self.add_cost(
+                _id, row["name"].astype(str), row["cost"], row["remark"].astype(str)
+            )

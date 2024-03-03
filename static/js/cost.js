@@ -23,6 +23,31 @@ function add_cost() {
     .catch(error => console.error("请求失败:", error));
 }
 
+function upload() {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const _id = urlParams.get("id");
+  const input = document.getElementById("excelFile");
+  console.log(input);
+  const file = input.files[0];
+  console.log(file);
+  if (file) {
+    // 使用FormData来包装文件数据
+    const formData = new FormData();
+    formData.append("file", file);
+    // 发起POST请求到后端API
+    fetch(END_POINT + "/import?id=" + _id, {
+      method: "POST",
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error("Error:", error));
+  } else {
+    alert("Please select a file.");
+  }
+}
+
 function list_render(data) {
   const container = document.getElementById("container");
   container.innerHTML = "";
@@ -127,7 +152,9 @@ function add_cost_column(data) {
       })
         .then(response => response.json()) // 解析 JSON 响应
         .then(data => {
+          alert("删除成功");
           console.log(data);
+          location.reload();
         })
         .catch(error => {
           console.error("Error:", error);
@@ -181,11 +208,18 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(response => response.json()) // 解析 JSON 响应
       .then(data => {
         alert("添加成功");
+        location.reload();
         console.log("Success:", form_api);
       })
       .catch(error => {
         console.error("Error:", error);
         alert("项目创建失败，请检查");
       });
+  });
+  const btn = document.getElementById("upload_button");
+  console.log(btn);
+  btn.addEventListener("click", e => {
+    e.preventDefault();
+    upload();
   });
 });

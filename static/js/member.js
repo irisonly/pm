@@ -24,11 +24,11 @@ const promise_type = fetch(END_POINT + "/charge", {
   .then(data => {
     const content = data.response;
     console.log(content);
-    const member_list = document.getElementById("container");
+    const member_list = document.getElementById("m_container");
     member_list.innerHTML = "";
     content.forEach(element => {
       const data_list = document.createElement("ul");
-      data_list.className = "projects";
+      data_list.className = "m_projects";
       data_list.innerHtml = "";
       member_list.appendChild(data_list);
       const name = document.createElement("li");
@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(response => response.json()) // 解析 JSON 响应
       .then(data => {
         alert("添加成功");
+        location.reload();
         console.log("Success:", form_api);
       })
       .catch(error => {

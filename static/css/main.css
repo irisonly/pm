@@ -98,9 +98,10 @@ body .button_area form {
 body .button_area form label {
   font-size: 14px;
   margin-right: 20px;
+  line-height: 30px;
 }
 body .button_area form input {
-  height: 20px;
+  height: 30px;
   width: 200px;
   margin: 0;
   padding: 0;
@@ -132,15 +133,20 @@ body .bg-black {
   width: 50%;
 }
 body #container,
-body #c_container {
+body #c_container,
+body #m_container {
   width: 90%;
   display: flex;
   flex-direction: column;
   margin: 10px auto;
 }
 body #container .projects,
-body #c_container .projects {
-  height: 30px;
+body #c_container .projects,
+body #m_container .projects,
+body #container .m_projects,
+body #c_container .m_projects,
+body #m_container .m_projects {
+  height: auto;
   display: flex;
   justify-content: left;
   margin: 0;
@@ -149,14 +155,22 @@ body #c_container .projects {
   border: 1px #ffe9d9 solid;
 }
 body #container .projects li,
-body #c_container .projects li {
+body #c_container .projects li,
+body #m_container .projects li,
+body #container .m_projects li,
+body #c_container .m_projects li,
+body #m_container .m_projects li {
   text-align: center;
   width: 210px;
   line-height: 30px;
   font-size: 12px;
 }
 body #container .projects .project_name,
-body #c_container .projects .project_name {
+body #c_container .projects .project_name,
+body #m_container .projects .project_name,
+body #container .m_projects .project_name,
+body #c_container .m_projects .project_name,
+body #m_container .m_projects .project_name {
   overflow: hidden;
   line-height: 12px;
 }
