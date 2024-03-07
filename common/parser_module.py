@@ -8,6 +8,7 @@ class Parser:
         self.parser.add_argument("id", type=int, required=False)
         self.parser.add_argument("level", type=int, required=False)
         self.parser.add_argument("salary", type=float, required=False)
+        self.parser.add_argument("month", type=int, required=False)
 
     def output(self):
         return self.parser.parse_args()  # 解析并返回请求参数

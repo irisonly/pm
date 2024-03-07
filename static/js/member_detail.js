@@ -29,9 +29,9 @@ function type_select(data, _id) {
 function handle_delete(event) {
   const query_string = window.location.search;
   const query_url = new URLSearchParams(query_string);
-  const name = query_url.get("name");
-  console.log(event, name);
-  fetch(END_POINT + "/charge?name=" + name, {
+  const id = query_url.get("id");
+  console.log(event, id);
+  fetch(END_POINT + "/charge?id=" + id, {
     method: "DELETE", // 指定请求方法为 POST
     headers: {
       // 指定发送的数据类型为 JSON
@@ -40,7 +40,7 @@ function handle_delete(event) {
   })
     .then(response => response.json()) // 解析 JSON 响应
     .then(data => {
-      console.log("Success:", name);
+      console.log("Success:", id);
       // alert("项目删除成功");
       window.location.href = "./member.html";
     })
@@ -59,6 +59,23 @@ fetch(END_POINT + "/level", {
     const content = data.response;
     console.log(content);
     type_select(content, "status_id");
+    type_select(
+      [
+        { id: 1, name: "1" },
+        { id: 2, name: "2" },
+        { id: 3, name: "3" },
+        { id: 4, name: "4" },
+        { id: 5, name: "5" },
+        { id: 6, name: "6" },
+        { id: 7, name: "7" },
+        { id: 8, name: "8" },
+        { id: 9, name: "9" },
+        { id: 10, name: "10" },
+        { id: 11, name: "11" },
+        { id: 12, name: "12" },
+      ],
+      "month"
+    );
   })
   .catch(error => {
     console.error("请求失败:", error);
@@ -71,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const id = query_url.get("id");
 
   const name = query_url.get("name");
-  fetch(END_POINT + "/charge?name=" + name, {
+  fetch(END_POINT + "/charge?id=" + id, {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
@@ -84,6 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
       select_default("status_id", content.level);
       const salary = document.getElementById("salary");
       salary.value = content.salary;
+      const month = document.getElementById("month");
+      month.value = content.month;
     })
     .catch(error => {
       console.error("请求失败:", error);
@@ -100,10 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
       form_api[key] = value;
     });
     form_api["level"] = parseInt(form_api["level"], 10);
+    form_api["month"] = parseInt(form_api["month"], 10);
     form_api["salary"] = parseFloat(form_api["salary"]);
-
+    const query_string = window.location.search;
+    const query_url = new URLSearchParams(query_string);
+    const id = query_url.get("id");
     console.log(form_api);
-    fetch(END_POINT + "/charge", {
+    fetch(END_POINT + "/charge?id=" + id, {
       method: "PUT", // 指定请求方法为 POST
       headers: {
         // 指定发送的数据类型为 JSON

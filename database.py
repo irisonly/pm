@@ -69,6 +69,7 @@ class ProjectCharge(db.Model):
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     level: Mapped[int] = mapped_column(Integer, ForeignKey("level.id"), nullable=False)
     salary: Mapped[float] = mapped_column(Float, nullable=False)
+    month: Mapped[int] = mapped_column(Integer, unique=False, nullable=True)
     m_projects = relationship(
         "Project", secondary=project_charge_association_m, back_populates="m_charges"
     )
@@ -149,8 +150,8 @@ class Database:
     def create_table(self):
         self.db.create_all()
 
-    def add_charge(self, name, level, salary):
-        record = ProjectCharge(name=name, level=level, salary=salary)
+    def add_charge(self, name, level, salary, month):
+        record = ProjectCharge(name=name, level=level, salary=salary, month=month)
         self.db.session.add(record)
         try:
             self.db.session.commit()
@@ -159,8 +160,8 @@ class Database:
         else:
             return True
 
-    def get_charge(self, name=None):
-        if not name:
+    def get_charge(self, _id=None):
+        if not _id:
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectCharge).order_by(ProjectCharge.id)
@@ -176,6 +177,7 @@ class Database:
                         "name": i.name,
                         "level": i.level_name.name,
                         "salary": i.salary,
+                        "month": i.month,
                         "m_projects": [c.name for c in i.m_projects],
                         "p_projects": [c.name for c in i.p_projects],
                     }
@@ -183,32 +185,35 @@ class Database:
                 ]
                 return records_output
         record = self.db.session.execute(
-            self.db.select(ProjectCharge).where(ProjectCharge.name == name)
+            self.db.select(ProjectCharge).where(ProjectCharge.id == _id)
         ).scalar()
         if record is not None:
             record_output = {
                 "id": record.id,
                 "name": record.name,
                 "level": record.level_name.name,
+                "month": record.month,
                 "salary": record.salary,
             }
             return record_output
 
-    def modify_charge(self, name, level, salary):
+    def modify_charge(self, _id, name, level, salary, month):
         record = self.db.session.execute(
-            self.db.select(ProjectCharge).where(ProjectCharge.name == name)
+            self.db.select(ProjectCharge).where(ProjectCharge.id == _id)
         ).scalar()
+        print(record)
         if record is not None:
             record.name = name
             record.level = level
             record.salary = salary
+            record.month = month
             self.db.session.commit()
             return True
         return False
 
-    def delete_charge(self, name):
+    def delete_charge(self, _id):
         record = self.db.session.execute(
-            self.db.select(ProjectCharge).where(ProjectCharge.name == name)
+            self.db.select(ProjectCharge).where(ProjectCharge.id == _id)
         ).scalar()
         if record is not None:
             self.db.session.delete(record)
@@ -525,9 +530,9 @@ class Database:
 
     def count_sum(self):
         sum_of_payment = self.db.session.query(func.sum(Project.payment)).scalar()
-        sum_of_salary = (
-            self.db.session.query(func.sum(ProjectCharge.salary)).scalar() * 12
-        )
+        sum_of_salary = self.db.session.query(
+            func.sum(ProjectCharge.salary * func.coalesce(ProjectCharge.month, 12))
+        ).scalar()
         sum_of_profit = (
             self.db.session.query(func.sum(Project.profit)).scalar() - sum_of_salary
         )

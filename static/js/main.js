@@ -1,10 +1,34 @@
 import { END_POINT } from "./config.js";
+let project_array = [];
+
+function sortData(columnName, direction) {
+  console.log(`Sorting ${columnName} in ${direction} order.`);
+  if (direction == "asc") {
+    project_array.sort(
+      (a, b) =>
+        Number(a[columnName].replace(/[%,-]/g, "")) -
+        Number(b[columnName].replace(/[%,-]/g, ""))
+    );
+  }
+  if (direction == "desc") {
+    project_array.sort(
+      (a, b) =>
+        Number(b[columnName].replace(/[%,-]/g, "")) -
+        Number(a[columnName].replace(/[%,-]/g, ""))
+    );
+  }
+  console.log(project_array);
+  list_render(project_array);
+
+  // 这里添加你的排序逻辑
+  // 你可能需要访问服务器端或者客户端的数据结构来进行实际的排序操作
+}
 
 function list_render(data) {
-  if (Array.isArray(data.response)) {
+  if (Array.isArray(data)) {
     const container = document.getElementById("container");
     container.innerHTML = "";
-    const response = data.response;
+    const response = data;
     console.log(response);
     response.forEach(element => {
       const data_list = document.createElement("ul");
@@ -200,7 +224,9 @@ fetch(END_POINT + "/projectlist", {
 })
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
-    list_render(data);
+    project_array = data.response;
+    console.log(project_array);
+    list_render(data.response);
   })
   .catch(error => {
     console.error("请求失败:", error);
@@ -272,5 +298,41 @@ document.addEventListener("DOMContentLoaded", function () {
         window.URL.revokeObjectURL(url);
       })
       .catch(error => console.error("请求失败:", error));
+  });
+  document.getElementById("amountasc").addEventListener("click", () => {
+    sortData("payment", "asc");
+  });
+  document.getElementById("amountdesc").addEventListener("click", () => {
+    sortData("payment", "desc");
+  });
+  document.getElementById("costasc").addEventListener("click", () => {
+    sortData("cost", "asc");
+  });
+  document.getElementById("costdesc").addEventListener("click", () => {
+    sortData("cost", "desc");
+  });
+  document.getElementById("profitasc").addEventListener("click", () => {
+    sortData("profit", "asc");
+  });
+  document.getElementById("profitdesc").addEventListener("click", () => {
+    sortData("profit", "desc");
+  });
+  document.getElementById("profitrateasc").addEventListener("click", () => {
+    sortData("profit_rate", "asc");
+  });
+  document.getElementById("profitratedesc").addEventListener("click", () => {
+    sortData("profit_rate", "desc");
+  });
+  document.getElementById("starteasc").addEventListener("click", () => {
+    sortData("start_time", "asc");
+  });
+  document.getElementById("startdesc").addEventListener("click", () => {
+    sortData("start_time", "desc");
+  });
+  document.getElementById("endasc").addEventListener("click", () => {
+    sortData("end_time", "asc");
+  });
+  document.getElementById("enddesc").addEventListener("click", () => {
+    sortData("end_time", "desc");
   });
 });

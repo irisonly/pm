@@ -36,7 +36,7 @@ const promise_type = fetch(END_POINT + "/charge", {
       const name_edit = document.createElement("a");
       name_edit.id = element.id;
       name_edit.textContent = element.name;
-      name_edit.href = "./member_detail.html?name=" + element.name;
+      name_edit.href = "./member_detail.html?id=" + element.id;
       name_edit.className = "project_name";
       name.appendChild(name_edit);
       const position = document.createElement("li");
@@ -45,6 +45,9 @@ const promise_type = fetch(END_POINT + "/charge", {
       const salary = document.createElement("li");
       salary.textContent = element.salary;
       data_list.appendChild(salary);
+      const month = document.createElement("li");
+      month.textContent = element.month;
+      data_list.appendChild(month);
       const m_project = document.createElement("li");
       m_project.style.width = "500px";
       const projects = element.m_projects.map(project => project).join(" ");
@@ -71,6 +74,23 @@ const promise_level = fetch(END_POINT + "/level", {
     const content = data.response;
     console.log(content);
     type_select(content, "status_id");
+    type_select(
+      [
+        { id: 1, name: "1" },
+        { id: 2, name: "2" },
+        { id: 3, name: "3" },
+        { id: 4, name: "4" },
+        { id: 5, name: "5" },
+        { id: 6, name: "6" },
+        { id: 7, name: "7" },
+        { id: 8, name: "8" },
+        { id: 9, name: "9" },
+        { id: 10, name: "10" },
+        { id: 11, name: "11" },
+        { id: 12, name: "12" },
+      ],
+      "month"
+    );
   })
   .catch(error => {
     console.error("请求失败:", error);
@@ -87,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       form_api[key] = value;
     });
     form_api["level"] = parseInt(form_api["level"], 10);
+    form_api["month"] = parseInt(form_api["month"], 10);
     form_api["salary"] = parseFloat(form_api["salary"]);
     console.log(form_api);
     fetch(END_POINT + "/charge", {
