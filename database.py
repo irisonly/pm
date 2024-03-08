@@ -441,6 +441,7 @@ class Database:
             .scalars()
             .all()
         )
+        dashboard = self.count_sum(conditions)
         records_output = [
             {
                 "id": i.id,
@@ -473,9 +474,11 @@ class Database:
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
                 "cost": f"{i.cost:,.2f}",
+                "dashboard": dashboard,
             }
             for i in records
         ]
+
         if records_output:
             return records_output
 
@@ -528,18 +531,41 @@ class Database:
             return True
         return False
 
-    def count_sum(self):
-        sum_of_payment = self.db.session.query(func.sum(Project.payment)).scalar()
+    def count_sum(self, conditions=None):
         sum_of_salary = self.db.session.query(
             func.sum(ProjectCharge.salary * func.coalesce(ProjectCharge.month, 12))
         ).scalar()
-        sum_of_profit = (
-            self.db.session.query(func.sum(Project.profit)).scalar() - sum_of_salary
-        )
-        sum_of_balance_payment = self.db.session.query(
-            func.sum(Project.balance_payment)
-        ).scalar()
+        if conditions is None:
+            sum_of_payment = self.db.session.query(func.sum(Project.payment)).scalar()
 
+            sum_of_profit = (
+                self.db.session.query(func.sum(Project.profit)).scalar() - sum_of_salary
+            )
+            sum_of_balance_payment = self.db.session.query(
+                func.sum(Project.balance_payment)
+            ).scalar()
+        else:
+            sum_of_payment = (
+                self.db.session.query(func.sum(Project.payment))
+                .where(and_(*conditions))
+                .scalar()
+            )
+
+            sum_of_profit = (
+                self.db.session.query(func.sum(Project.profit))
+                .where(and_(*conditions))
+                .scalar()
+            )
+
+            sum_of_balance_payment = (
+                self.db.session.query(func.sum(Project.balance_payment))
+                .where(and_(*conditions))
+                .scalar()
+            )
+            if sum_of_payment is None:
+                sum_of_payment = 0
+                sum_of_profit = 0
+                sum_of_balance_payment = 0
         return {
             "sum_of_payment": f"{sum_of_payment:,.2f}",
             "sum_of_profit": f"{sum_of_profit:,.2f}",

@@ -36,6 +36,7 @@ class ProjectDetail(Resource):
             charge_p_id=transfer_zero(request.args.get("charge_p_id")),
             type_id=transfer_zero(request.args.get("type_id")),
         )
+
         if query is not None:
             return {"response": query}
         return {"response": "no such project"}

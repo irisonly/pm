@@ -1,5 +1,6 @@
 import { END_POINT } from "./config.js";
 let project_array = [];
+let default_dashborad = {};
 
 function sortData(columnName, direction) {
   console.log(`Sorting ${columnName} in ${direction} order.`);
@@ -99,9 +100,10 @@ function list_render(data) {
 }
 
 function dashboard_render(data) {
-  const response = data.response;
+  const response = data;
   console.log(response);
   const dash_list = document.getElementById("dash_list");
+  dash_list.innerHTML = "";
   const sum_of_payment_title = document.createElement("li");
   sum_of_payment_title.textContent = "总营业额";
   const sum_of_payment = document.createElement("li");
@@ -149,13 +151,18 @@ function submit_form(event) {
   const form = event.target;
   const form_data = new FormData(form);
   const query_string = new URLSearchParams(form_data).toString();
+  console.log(query_string);
   fetch(END_POINT + "/project?id&" + query_string, {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
     .then(response => response.json()) // 将响应转换为JSON
     .then(data => {
-      list_render(data);
+      console.log("query", data, data.response[0].dashboard);
+      list_render(data.response);
+      if (data.response[0].dashboard != undefined) {
+        dashboard_render(data.response[0].dashboard);
+      }
     })
     .catch(error => console.error("请求失败:", error));
 }
@@ -168,7 +175,7 @@ function reset_form(event) {
   })
     .then(response => response.json()) // 将响应转换为JSON
     .then(data => {
-      list_render(data);
+      list_render(data.response);
       reset_query();
     })
     .catch(error => console.error("请求失败:", error));
@@ -179,18 +186,19 @@ function reset_query() {
   document.getElementById("m_charge").selectedIndex = 0;
   document.getElementById("p_charge").selectedIndex = 0;
   document.getElementById("project_name").value = "";
+  dashboard_render(default_dashborad);
 }
 
-function click(event) {
-  event.preventDefault();
-  const id = parseInt(event.target.id, 10);
-  fetch(END_POINT + "/project?name&charge_id&type_id&id=" + id)
-    .then(response => response.json()) // 将响应转换为JSON
-    .then(data => {
-      console.log(data);
-    })
-    .catch(error => console.error("请求失败:", error));
-}
+// function click(event) {
+//   event.preventDefault();
+//   const id = parseInt(event.target.id, 10);
+//   fetch(END_POINT + "/project?name&charge_id&type_id&id=" + id)
+//     .then(response => response.json()) // 将响应转换为JSON
+//     .then(data => {
+//       console.log(data);
+//     })
+//     .catch(error => console.error("请求失败:", error));
+// }
 
 function get_token() {
   // console.log(localStorage.getItem("access_token"));
@@ -239,7 +247,8 @@ fetch(END_POINT + "/dashboard", {
 })
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
-    dashboard_render(data);
+    default_dashborad = data.response;
+    dashboard_render(data.response);
   })
   .catch(error => {
     console.error("请求失败:", error);

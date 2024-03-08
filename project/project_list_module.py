@@ -8,8 +8,6 @@ database = Database()
 class ProjectList(Resource):
     @jwt_required()
     def get(self):
-        claims = get_jwt()
-        print(claims)
         data = database.get_project_list()
         if data is not None:
             return {"response": data}
