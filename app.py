@@ -15,6 +15,7 @@ from project.project_detail_module import ProjectDetail
 from cost.cost_module import Cost
 from level.level_module import Level
 
+
 app = Flask(__name__)  # 创建 Flask 应用实例
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     "sqlite:///database.db"  # 配置数据库 URI，这里使用的是 SQLite

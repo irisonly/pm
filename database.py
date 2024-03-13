@@ -665,58 +665,66 @@ class Database:
         return False
 
     def out_data(self):
-        records = (
-            self.db.session.execute(self.db.select(Project).order_by(Project.id))
-            .scalars()
-            .all()
-        )
-        print(records)
-        dataframe = pandas.DataFrame(
-            [
-                (
-                    i.id,
-                    i.name,
-                    f"{i.payment:,.2f}",
-                    f"{i.cost:,.2f}",
-                    f"{i.balance_payment:,.2f}",
-                    f"{i.tax:,.2f}",
-                    f"{i.profit:,.2f}",
-                    f"{i.profit_rate:.2%}",
-                    i.start_time,
-                    i.end_time,
+        try:
+            records = (
+                self.db.session.execute(self.db.select(Project).order_by(Project.id))
+                .scalars()
+                .all()
+            )
+            print(records)
+            dataframe = pandas.DataFrame(
+                [
                     (
-                        [f"{c.name}|{c.level_name.name}" for c in i.m_charges]
-                        if len([f"{c.name}|{c.level_name.name}" for c in i.m_charges])
-                        > 0
-                        else ""
-                    ),
-                    (
-                        [f"{c.name}|{c.level_name.name}" for c in i.p_charges]
-                        if len([f"{c.name}|{c.level_name.name}" for c in i.p_charges])
-                        > 0
-                        else ""
-                    ),
-                )
-                for i in records
-            ],
-            columns=[
-                "项目编号",
-                "项目名称",
-                "项目金额",
-                "项目成本",
-                "项目尾款",
-                "项目税款",
-                "项目利润",
-                "项目利润率",
-                "项目开始时间",
-                "项目结束时间",
-                "项目管理",
-                "项目专家",
-            ],
-        )
-        excel_name = "output.xlsx"
-        dataframe.to_excel(excel_name, index=False)
-        return send_file(excel_name, as_attachment=True)
+                        i.id,
+                        i.name,
+                        f"{i.payment:,.2f}",
+                        f"{i.cost:,.2f}",
+                        f"{i.balance_payment:,.2f}",
+                        f"{i.tax:,.2f}",
+                        f"{i.profit:,.2f}",
+                        f"{i.profit_rate:.2%}",
+                        i.start_time,
+                        i.end_time,
+                        (
+                            [f"{c.name}|{c.level_name.name}" for c in i.m_charges]
+                            if len(
+                                [f"{c.name}|{c.level_name.name}" for c in i.m_charges]
+                            )
+                            > 0
+                            else ""
+                        ),
+                        (
+                            [f"{c.name}|{c.level_name.name}" for c in i.p_charges]
+                            if len(
+                                [f"{c.name}|{c.level_name.name}" for c in i.p_charges]
+                            )
+                            > 0
+                            else ""
+                        ),
+                    )
+                    for i in records
+                ],
+                columns=[
+                    "项目编号",
+                    "项目名称",
+                    "项目金额",
+                    "项目成本",
+                    "项目尾款",
+                    "项目税款",
+                    "项目利润",
+                    "项目利润率",
+                    "项目开始时间",
+                    "项目结束时间",
+                    "项目管理",
+                    "项目专家",
+                ],
+            )
+            excel_name = "output.xlsx"
+            dataframe.to_excel(excel_name, index=False)
+            return send_file(excel_name, as_attachment=True)
+        except Exception as e:
+            # 显示错误信息
+            return {"error": str(e)}
 
     def add_level(self, name):
         record = Level(name=name)
