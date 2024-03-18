@@ -315,9 +315,9 @@ class Database:
         payment,
         balance_payment,
     ):
-
-        tax = payment * 0.06
-        profit = payment - tax
+        payment = round(payment, 2)
+        tax = round(payment * 0.06, 2)
+        profit = round(payment - tax, 2)
         profit_rate = round(profit / payment, 2)
         record = Project(
             name=name,
@@ -498,8 +498,9 @@ class Database:
         i = self.db.session.execute(
             self.db.select(Project).where(Project.id == _id)
         ).scalar()
-        tax = payment * 0.06
-        profit = payment - i.cost - tax
+        payment = round(payment, 2)
+        tax = round(payment * 0.06, 2)
+        profit = round(payment - i.cost - tax, 2)
         profit_rate = round(profit / payment, 2)
 
         i.name = name
@@ -603,7 +604,9 @@ class Database:
         return admin_mapping
 
     def add_cost(self, project_id, name, cost, remark=None):
-        record = ProjectCost(name=name, project_id=project_id, cost=cost, remark=remark)
+        record = ProjectCost(
+            name=name, project_id=project_id, cost=round(cost, 2), remark=remark
+        )
         self.db.session.add(record)
         try:
             self.db.session.flush()
@@ -612,7 +615,7 @@ class Database:
             return False
         else:
             # 更新项目成本，利润和利润率
-            self.update_project_cost(project_id, cost)
+            self.update_project_cost(project_id, round(cost, 2))
             return {
                 "id": record.id,
                 "project_id": record.project_id,
@@ -625,8 +628,8 @@ class Database:
         record = self.db.session.execute(
             self.db.select(Project).where(Project.id == _id)
         ).scalar()
-        record.cost = record.cost + cost
-        record.profit = record.profit - cost
+        record.cost = round(record.cost + cost, 2)
+        record.profit = round(record.profit - cost, 2)
         record.profit_rate = round(record.profit / record.payment, 2)
         self.db.session.commit()
 
@@ -765,15 +768,20 @@ class Database:
         self.db.session.commit()
 
     def read_file(self, file, _id):
-        df = pandas.read_excel(file)
+        df = pandas.read_excel(file, skiprows=2)
         df.rename(
             columns={
-                "成本名称(每笔付出的成本为一行)": "name",
-                "成本金额(精确到小数点后2位)": "cost",
-                "备注": "remark",
+                "费用类型": "category",
+                "内容": "name",
+                "成本": "cost",
+                "付款备注（填写公司或者劳务费姓名）": "remark",
             },
             inplace=True,
         )
+        df.ffill(inplace=True)
+        df["cost"] = df["cost"].round(2)
         for idx, row in df.iterrows():
-            print(idx, row["name"], row["cost"], row["remark"])
+            if isinstance(row["remark"], float) or isinstance(row["remark"], int):
+                break
+            print(idx, row["name"], row["cost"], row["remark"], type(row["remark"]))
             self.add_cost(_id, str(row["name"]), row["cost"], str(row["remark"]))

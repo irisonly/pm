@@ -95,9 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     form_api["type_id"] = parseInt(form_api["type_id"], 10);
     form_api["status_id"] = parseInt(form_api["status_id"], 10);
-    form_api["balance_payment"] = parseInt(form_api["balance_payment"], 10);
-    form_api["payment"] = parseInt(form_api["payment"], 10);
-    form_api["cost"] = parseInt(form_api["cost"], 10);
+    form_api["balance_payment"] = parseFloat(form_api["balance_payment"], 10);
+    form_api["payment"] = parseFloat(form_api["payment"], 10);
+    form_api["cost"] = parseFloat(form_api["cost"], 10);
     var checkboxes = document.getElementsByName("m");
     var selectedm = [];
 
