@@ -21,8 +21,10 @@ class Cost(Resource):
             return {"response": res}
 
     def delete(self):
+        _id = request.get_json()["pid"]
         data = request.get_json()["id"]
-        res = database.delete_cost(data)
+        print(_id, data)
+        res = database.delete_cost(data, _id)
         if res:
             return {"response": f"successful delete the cost"}
         return {"response": f"fail to delete the cost"}

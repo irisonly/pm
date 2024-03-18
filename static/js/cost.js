@@ -115,6 +115,9 @@ function list_render(data) {
 }
 
 function add_cost_column(data) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const pid = urlParams.get("id");
   const container = document.getElementById("c_container");
   container.innerHTML = "";
   data.forEach(element => {
@@ -151,7 +154,7 @@ function add_cost_column(data) {
           "Content-Type": "application/json",
           //   Authorization: "Bearer " + refresh_token,
         },
-        body: JSON.stringify({ id: _id }), // 将 JavaScript 对象转换为 JSON 字符串
+        body: JSON.stringify({ id: _id, pid: pid }), // 将 JavaScript 对象转换为 JSON 字符串
       })
         .then(response => response.json()) // 解析 JSON 响应
         .then(data => {

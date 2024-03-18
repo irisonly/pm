@@ -653,12 +653,12 @@ class Database:
                 for record in records
             ]
 
-    def delete_cost(self, id):
+    def delete_cost(self, id, _id):
         record = self.db.session.execute(
             self.db.select(ProjectCost).where(ProjectCost.id == id)
         ).scalar()
         if record is not None:
-            record.total_cost.cost -= record.cost
+            self.update_project_cost(_id, -record.cost)
             self.db.session.delete(record)
             self.db.session.commit()
             return True
