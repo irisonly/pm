@@ -778,10 +778,12 @@ class Database:
             },
             inplace=True,
         )
+        # print(df)
+        df.dropna(how="all", axis="index", inplace=True)
         df.ffill(inplace=True)
         df["cost"] = df["cost"].round(2)
         for idx, row in df.iterrows():
             if isinstance(row["remark"], float) or isinstance(row["remark"], int):
-                break
+                continue
             print(idx, row["name"], row["cost"], row["remark"], type(row["remark"]))
             self.add_cost(_id, str(row["name"]), row["cost"], str(row["remark"]))
