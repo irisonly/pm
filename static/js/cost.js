@@ -83,6 +83,9 @@ function list_render(data) {
   const cost = document.createElement("li");
   cost.textContent = element.cost;
   data_list.appendChild(cost);
+  const not_paid = document.createElement("li");
+  not_paid.textContent = element.not_paid;
+  data_list.appendChild(not_paid);
   const tax = document.createElement("li");
   tax.textContent = element.tax;
   data_list.appendChild(tax);
@@ -137,6 +140,15 @@ function add_cost_column(data) {
     const li3 = document.createElement("li");
     li3.innerHTML = element.remark;
     data_list.appendChild(li3);
+
+    const li5 = document.createElement("li");
+    if (element.status == 0) {
+      li5.innerHTML = "未支付";
+    } else {
+      li5.innerHTML = "已支付";
+    }
+    // li5.innerHTML = element.status;
+    data_list.appendChild(li5);
     const li4 = document.createElement("li");
     data_list.appendChild(li4);
     const a = document.createElement("a");
@@ -177,6 +189,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const _id = urlParams.get("id");
+  const select_form = document.getElementById("status");
+  [
+    { id: 0, name: "未支付" },
+    { id: 1, name: "已支付" },
+  ].forEach(element => {
+    const opt = document.createElement("option");
+    opt.value = element.id;
+    opt.textContent = element.name;
+    select_form.appendChild(opt);
+  });
 
   fetch(END_POINT + "/project?name&charge_p_id&type_id&charge_m_id&id=" + _id, {
     method: "GET",
@@ -201,6 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     form_api["project_id"] = parseInt(_id, 10);
     form_api["cost"] = parseFloat(form_api["cost"], 10);
+    form_api["status"] = parseFloat(form_api["status"], 10);
     console.log(form_api);
     fetch(END_POINT + "/cost", {
       method: "POST", // 指定请求方法为 POST

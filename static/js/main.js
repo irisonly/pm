@@ -4,19 +4,43 @@ let default_dashborad = {};
 
 function sortData(columnName, direction) {
   console.log(`Sorting ${columnName} in ${direction} order.`);
-  if (direction == "asc") {
-    project_array.sort(
-      (a, b) =>
+  if (direction === "asc") {
+    project_array.sort((a, b) => {
+      if (
+        typeof a[columnName] === "string" &&
+        typeof b[columnName] === "string"
+      ) {
+        if (
+          /[\u4e00-\u9fa5]/.test(a[columnName]) &&
+          /[\u4e00-\u9fa5]/.test(b[columnName])
+        ) {
+          return a[columnName].localeCompare(b[columnName], "zh");
+        }
+      }
+      return (
         Number(a[columnName].replace(/[%,-]/g, "")) -
         Number(b[columnName].replace(/[%,-]/g, ""))
-    );
+      );
+    });
   }
-  if (direction == "desc") {
-    project_array.sort(
-      (a, b) =>
+  if (direction === "desc") {
+    project_array.sort((a, b) => {
+      if (
+        typeof a[columnName] === "string" &&
+        typeof b[columnName] === "string"
+      ) {
+        if (
+          /[\u4e00-\u9fa5]/.test(a[columnName]) &&
+          /[\u4e00-\u9fa5]/.test(b[columnName])
+        ) {
+          return b[columnName].localeCompare(a[columnName], "zh");
+        }
+      }
+      return (
         Number(b[columnName].replace(/[%,-]/g, "")) -
         Number(a[columnName].replace(/[%,-]/g, ""))
-    );
+      );
+    });
   }
   console.log(project_array);
   list_render(project_array);
@@ -63,6 +87,9 @@ function list_render(data) {
       cost_edit.textContent = element.cost;
       cost_edit.href = "./cost.html?id=" + element.id;
       cost.appendChild(cost_edit);
+      const not_paid = document.createElement("li");
+      not_paid.textContent = element.not_paid;
+      data_list.appendChild(not_paid);
       const tax = document.createElement("li");
       tax.textContent = element.tax;
       data_list.appendChild(tax);
@@ -313,6 +340,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document.getElementById("amountdesc").addEventListener("click", () => {
     sortData("payment", "desc");
+  });
+  document.getElementById("nameasc").addEventListener("click", () => {
+    sortData("name", "asc");
+  });
+  document.getElementById("namedesc").addEventListener("click", () => {
+    sortData("name", "desc");
   });
   document.getElementById("costasc").addEventListener("click", () => {
     sortData("cost", "asc");

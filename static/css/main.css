@@ -91,22 +91,22 @@ body .button_area a #exit {
   padding: 0;
 }
 body .button_area form {
-  width: 90%;
   display: flex;
   justify-content: left;
 }
 body .button_area form label {
   font-size: 14px;
-  margin-right: 20px;
+  margin-right: 10px;
   line-height: 30px;
 }
-body .button_area form input {
+body .button_area form input,
+body .button_area form select {
   height: 30px;
-  width: 200px;
+  width: 100px;
   margin: 0;
   padding: 0;
   border: 1px solid #fad689;
-  margin-right: 20px;
+  margin-right: 10px;
 }
 body .title {
   width: 90%;

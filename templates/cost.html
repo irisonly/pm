@@ -17,12 +17,16 @@
 
     <div class="button_area">
       <form action="" method="post" id="cost_form">
-        <label for="">成本项</label>
+        <label for="">成本</label>
         <input type="text" id="name" placeholder="输入成本项目" name="name" />
-        <label for="">成本金额</label>
+        <label for="">金额</label>
         <input type="text" id="cost" placeholder="输入成本金额" name="cost" />
         <label for="">备注</label>
         <input type="text" id="remark" placeholder="输入备注" name="remark" />
+        <label for="type_id">状态:</label>
+        <select id="status" name="status">
+          <!-- 其他类型选项 -->
+        </select>
         <button type="submit" style="background-color: #33a6b8; color: #ffffff">
           新增成本
         </button>
@@ -30,7 +34,13 @@
 
       <form action="" method="post" enctype="multipart/form-data">
         <label for="">上传</label>
-        <input type="file" name="file" accept=".xlsx, .xls" id="excelFile" />
+        <input
+          type="file"
+          name="file"
+          accept=".xlsx, .xls"
+          id="excelFile"
+          style="width: 150px"
+        />
 
         <button
           type="submit"
@@ -51,6 +61,7 @@
       <li>项目状态</li>
       <li>项目金额</li>
       <li>项目成本</li>
+      <li>未付成本</li>
       <li>项目发票</li>
       <li>项目利润</li>
       <li>项目利润率</li>
@@ -65,6 +76,7 @@
       <li>成本项</li>
       <li>成本金额</li>
       <li>备注</li>
+      <li>是否已支付</li>
       <li>操作</li>
     </ul>
     <div id="c_container"></div>

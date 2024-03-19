@@ -109,6 +109,7 @@ class Project(db.Model):
     profit_rate: Mapped[float] = mapped_column(Float, nullable=False)
     payment: Mapped[float] = mapped_column(Float, nullable=False)
     cost: Mapped[float] = mapped_column(Float, nullable=False)
+    not_paid: Mapped[float] = mapped_column(Float, default=0)
     tax: Mapped[float] = mapped_column(Float, nullable=False)
     balance_payment: Mapped[float] = mapped_column(Float, nullable=False)
     profit: Mapped[float] = mapped_column(Float, nullable=False)
@@ -141,6 +142,7 @@ class ProjectCost(db.Model):
     name: Mapped[str] = mapped_column(String, nullable=False)
     cost: Mapped[float] = mapped_column(Float, nullable=False)
     remark: Mapped[str] = mapped_column(String, nullable=True)
+    status: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 
 class Database:
@@ -373,6 +375,7 @@ class Database:
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
                 "cost": f"{i.cost:,.2f}",
+                "not_paid": f"{i.not_paid:,.2f}",
             }
             for i in records
         ]
@@ -420,6 +423,7 @@ class Database:
                 "balance_payment": i.balance_payment,
                 "payment": i.payment,
                 "cost": i.cost,
+                "not_paid": i.not_paid,
             }
             if record_output:
                 return record_output
@@ -474,6 +478,7 @@ class Database:
                 "balance_payment": f"{i.balance_payment:,.2f}",
                 "payment": f"{i.payment:,.2f}",
                 "cost": f"{i.cost:,.2f}",
+                "not_paid": f"{i.not_paid:,.2f}",
                 "dashboard": dashboard,
             }
             for i in records
@@ -603,9 +608,31 @@ class Database:
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
 
-    def add_cost(self, project_id, name, cost, remark=None):
+    def update_not_paid(self, project_id):
+        conditions = [ProjectCost.project_id == project_id, ProjectCost.status == 0]
+        sum_of_not_paid = (
+            self.db.session.query(func.sum(ProjectCost.cost))
+            .where(and_(*conditions))
+            .scalar()
+        )
+        print(sum_of_not_paid)
+        record = self.db.session.execute(
+            self.db.select(Project).where(Project.id == project_id)
+        ).scalar()
+        print(record.not_paid)
+        if sum_of_not_paid is None:
+            record.not_paid = 0.0
+        else:
+            record.not_paid = sum_of_not_paid
+        self.db.session.commit()
+
+    def add_cost(self, project_id, name, cost, remark=None, status=0):
         record = ProjectCost(
-            name=name, project_id=project_id, cost=round(cost, 2), remark=remark
+            name=name,
+            project_id=project_id,
+            cost=round(cost, 2),
+            remark=remark,
+            status=status,
         )
         self.db.session.add(record)
         try:
@@ -614,6 +641,7 @@ class Database:
         except exc.IntegrityError:
             return False
         else:
+            self.update_not_paid(project_id)
             # 更新项目成本，利润和利润率
             self.update_project_cost(project_id, round(cost, 2))
             return {
@@ -622,6 +650,7 @@ class Database:
                 "name": record.name,
                 "cost": record.cost,
                 "remark": record.remark,
+                "status": record.status,
             }
 
     def update_project_cost(self, _id, cost):
@@ -652,6 +681,7 @@ class Database:
                     "name": record.name,
                     "cost": record.cost,
                     "remark": record.remark,
+                    "status": record.status,
                 }
                 for record in records
             ]
@@ -664,6 +694,7 @@ class Database:
             self.update_project_cost(_id, -record.cost)
             self.db.session.delete(record)
             self.db.session.commit()
+            self.update_not_paid(_id)
             return True
         return False
 
