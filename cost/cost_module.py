@@ -32,3 +32,15 @@ class Cost(Resource):
         if res:
             return {"response": f"successful delete the cost"}
         return {"response": f"fail to delete the cost"}
+
+    def put(self):
+        data = request.get_json()
+        response = database.modify_cost(
+            data["id"],
+            data["name"],
+            data["cost"],
+            data["remark"],
+            data["status"],
+        )
+        if response:
+            return {"response": response}

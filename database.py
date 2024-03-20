@@ -615,11 +615,11 @@ class Database:
             .where(and_(*conditions))
             .scalar()
         )
-        print(sum_of_not_paid)
+        # print(sum_of_not_paid)
         record = self.db.session.execute(
             self.db.select(Project).where(Project.id == project_id)
         ).scalar()
-        print(record.not_paid)
+        # print(record.not_paid)
         if sum_of_not_paid is None:
             record.not_paid = 0.0
         else:
@@ -653,12 +653,42 @@ class Database:
                 "status": record.status,
             }
 
-    def update_project_cost(self, _id, cost):
+    def modify_cost(self, id, name, cost, remark, status):
+        record = self.db.session.execute(
+            self.db.select(ProjectCost).where(ProjectCost.id == id)
+        ).scalar()
+        if record:
+            origin_cost = record.cost
+            record.name = name
+            record.cost = cost
+            record.remark = remark
+            record.status = status
+            try:
+                self.db.session.commit()
+            except exc.IntegrityError:
+                return False
+            else:
+                self.update_project_cost(record.project_id, cost, origin_cost)
+                self.update_not_paid(record.project_id)
+                return {
+                    "id": record.id,
+                    "project_id": record.project_id,
+                    "name": record.name,
+                    "cost": record.cost,
+                    "remark": record.remark,
+                    "status": record.status,
+                }
+
+    def update_project_cost(self, _id, cost, origin_cost=None):
         record = self.db.session.execute(
             self.db.select(Project).where(Project.id == _id)
         ).scalar()
-        record.cost = round(record.cost + cost, 2)
-        record.profit = round(record.profit - cost, 2)
+        if origin_cost:
+            record.cost = round(record.cost - origin_cost + cost, 2)
+            record.profit = round(record.profit + origin_cost - cost, 2)
+        else:
+            record.cost = round(record.cost + cost, 2)
+            record.profit = round(record.profit - cost, 2)
         record.profit_rate = round(record.profit / record.payment, 2)
         self.db.session.commit()
 
