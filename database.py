@@ -660,7 +660,7 @@ class Database:
         if record:
             origin_cost = record.cost
             record.name = name
-            record.cost = cost
+            record.cost = round(cost, 2)
             record.remark = remark
             record.status = status
             try:
@@ -668,7 +668,7 @@ class Database:
             except exc.IntegrityError:
                 return False
             else:
-                self.update_project_cost(record.project_id, cost, origin_cost)
+                self.update_project_cost(record.project_id, round(cost, 2), origin_cost)
                 self.update_not_paid(record.project_id)
                 return {
                     "id": record.id,
@@ -715,6 +715,20 @@ class Database:
                 }
                 for record in records
             ]
+
+    def get_single_cost(self, c_id):
+        record = self.db.session.execute(
+            self.db.select(ProjectCost).where(ProjectCost.id == c_id)
+        ).scalar()
+        if record:
+            return {
+                "id": record.id,
+                "project_id": record.project_id,
+                "name": record.name,
+                "cost": record.cost,
+                "remark": record.remark,
+                "status": record.status,
+            }
 
     def delete_cost(self, id, _id):
         record = self.db.session.execute(

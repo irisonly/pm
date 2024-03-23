@@ -179,8 +179,13 @@ function add_cost_column(data) {
           alert("获取失败，请检查");
         });
     });
-
     li4.appendChild(a);
+    li4.innerHTML += " ";
+    const a1 = document.createElement("a");
+    a1.textContent = " 修改";
+    a1.href =
+      "./cost_detail.html?id=" + element.project_id + "&c_id=" + element.id;
+    li4.appendChild(a1);
   });
 }
 

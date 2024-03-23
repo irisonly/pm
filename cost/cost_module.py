@@ -20,7 +20,10 @@ class Cost(Resource):
 
     def get(self):
         _id = request.args.get("id")
-        res = database.get_cost(_id)
+        if request.args.get("c_id"):
+            res = database.get_single_cost(request.args.get("c_id"))
+        else:
+            res = database.get_cost(_id)
         if res:
             return {"response": res}
 
