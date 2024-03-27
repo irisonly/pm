@@ -23,3 +23,14 @@ class Admin(Resource):
         if data:
             return {"response": data}
         return {"response": "no admin"}
+
+
+class AdminProject(Resource):
+    def post(self):
+        data = request.get_json()
+        admin_id = data["admin_id"]
+        project_list = data["project_list"]
+        response = database.add_admin_projects(project_list, admin_id)
+        if response:
+            return {"response": f"successful add admin projects{response}"}
+        return {"response": f"fail to add admin projects"}

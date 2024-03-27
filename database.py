@@ -41,14 +41,11 @@ project_charge_association_m = db.Table(
     ),
 )
 
-
-class Admin(db.Model):
-    __tablename__ = "admin"
-    id: Mapped[int] = mapped_column(
-        Integer, primary_key=True, unique=True, nullable=False
-    )
-    user_name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String, nullable=False)
+project_admin_association = db.Table(
+    "project_admin_link",
+    db.Column("project_id", Integer, ForeignKey("project.id"), primary_key=True),
+    db.Column("admin_id", Integer, ForeignKey("admin.id"), primary_key=True),
+)
 
 
 class ProjectType(db.Model):
@@ -96,6 +93,18 @@ class ProjectStatus(db.Model):
     related_project = relationship("Project", backref="status_name")
 
 
+class Admin(db.Model):
+    __tablename__ = "admin"
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, unique=True, nullable=False
+    )
+    user_name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, nullable=False)
+    admin_projects = relationship(
+        "Project", secondary=project_admin_association, back_populates="project_admin"
+    )
+
+
 # TODO
 class Project(db.Model):
     __tablename__ = "project"
@@ -122,6 +131,11 @@ class Project(db.Model):
         "ProjectCharge",
         secondary=project_charge_association,
         back_populates="p_projects",
+    )
+    project_admin = relationship(
+        "Admin",
+        secondary=project_admin_association,
+        back_populates="admin_projects",
     )
     start_time: Mapped[str] = mapped_column(String, nullable=False)
     end_time: Mapped[str] = mapped_column(String, nullable=False)
@@ -597,7 +611,12 @@ class Database:
         )
         if records:
             records_output = [
-                {"id": i.id, "admin": i.user_name, "password": i.password}
+                {
+                    "id": i.id,
+                    "admin": i.user_name,
+                    "password": i.password,
+                    "projects": [i for i in i.admin_projects],
+                }
                 for i in records
             ]
             return records_output
@@ -841,6 +860,29 @@ class Database:
                 ).scalar()
                 project.p_charges.append(record)
         self.db.session.commit()
+
+    def add_admin_projects(self, project_list, admin_id):
+        admin_record = self.db.session.execute(
+            self.db.select(Admin).where(Admin.id == admin_id)
+        ).scalar()
+        print(admin_record)
+        if admin_record:
+            admin_record.admin_projects = []
+            self.db.session.commit()
+            if project_list:
+                for i in project_list:
+                    record = self.db.session.execute(
+                        self.db.select(Project).where(Project.id == i)
+                    ).scalar()
+                    admin_record.admin_projects.append(record)
+                    print(admin_record.admin_projects)
+        self.db.session.commit()
+        return {
+            "id": admin_record.id,
+            "admin": admin_record.user_name,
+            "password": admin_record.password,
+            "projects": [i for i in admin_record.admin_projects],
+        }
 
     def read_file(self, file, _id):
         df = pandas.read_excel(file, skiprows=2)

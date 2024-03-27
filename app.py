@@ -4,7 +4,7 @@ from flask_restful import Api
 from database import Database
 from flask_cors import CORS
 from datetime import timedelta
-from admin.admin_module import Admin
+from admin.admin_module import Admin, AdminProject
 from login.login_module import Login
 from common.common_module import DashBoard, Excel, Import
 from charge.charge_module import Charge
@@ -50,6 +50,7 @@ api.add_resource(Excel, "/excel")
 api.add_resource(Cost, "/cost")
 api.add_resource(Level, "/level")
 api.add_resource(Import, "/import")
+api.add_resource(AdminProject, "/adminproject")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口

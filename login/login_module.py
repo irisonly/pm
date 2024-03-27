@@ -20,7 +20,10 @@ class Login(Resource):
         if user_name in admin_mapping and check_password_hash(
             admin_mapping[user_name]["password"], password
         ):
-            if admin_mapping[user_name]["id"] == 1:
+            if (
+                admin_mapping[user_name]["id"] == 1
+                or admin_mapping[user_name]["id"] == 2
+            ):
                 additional_claims = {"role": "admin"}
             else:
                 additional_claims = {"role": "user"}
