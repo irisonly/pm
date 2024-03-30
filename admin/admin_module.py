@@ -42,4 +42,4 @@ class AdminProject(Resource):
         response = database.get_admin_projects(admin_id, "checked")
         if response:
             return {"response": response}
-        return {"response": "no project selected"}
+        return {"response": []}

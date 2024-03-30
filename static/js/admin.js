@@ -37,7 +37,9 @@ const project_selected = fetch(END_POINT + "/adminproject?id=" + id, {
 })
   .then(response => response.json())
   .then(data => {
+    console.log(data);
     select_d = data.response.map(ele => {
+      console.log(ele);
       return ele.id;
     });
     console.log(select_d);

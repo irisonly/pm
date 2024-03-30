@@ -24,6 +24,7 @@ class Base(DeclarativeBase):
 
 # TODO
 db = SQLAlchemy(model_class=Base)
+SUPER_ADMIN = [1, 2]
 
 project_charge_association = db.Table(
     "project_charge_link",
@@ -185,7 +186,7 @@ class Database:
                 .scalars()
                 .all()
             )
-            print(records)
+            # print(records)
             if records:
                 records_output = [
                     {
@@ -217,7 +218,7 @@ class Database:
         record = self.db.session.execute(
             self.db.select(ProjectCharge).where(ProjectCharge.id == _id)
         ).scalar()
-        print(record)
+        # print(record)
         if record is not None:
             record.name = name
             record.level = level
@@ -249,7 +250,7 @@ class Database:
 
     def get_type(self, name=""):
         if name == "":
-            print("name", name)
+            # print("name", name)
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectType).order_by(ProjectType.id)
@@ -257,10 +258,10 @@ class Database:
                 .scalars()
                 .all()
             )
-            print("records", records)
+            # print("records", records)
             if len(records) > 0:
                 records_output = [{"id": i.id, "name": i.name} for i in records]
-                print(records_output)
+                # print(records_output)
                 return records_output
         else:
             record = self.db.session.execute(
@@ -355,6 +356,7 @@ class Database:
         except exc.IntegrityError:
             return False
         else:
+            # self.update_super_admin_projects(record)
             self.collect_charger_data(m_id_list, p_id_list, record)
             return True
 
@@ -451,7 +453,7 @@ class Database:
         charge_p_id=None,
         type_id=None,
     ):
-        print(admin_id, name, _id, charge_p_id, charge_m_id, type_id)
+        # print(admin_id, name, _id, charge_p_id, charge_m_id, type_id)
         admin_projects = self.get_admin_projects(admin_id)
         conditions = []
         if _id is not None:
@@ -551,7 +553,7 @@ class Database:
             for i in records
             if i in admin_projects
         ]
-        print(records_output)
+        # print(records_output)
         if records_output:
             return records_output
 
@@ -683,7 +685,7 @@ class Database:
 
     def administrator_mapping(self):
         admin_list = self.get_administrator()
-        print("admin_list")
+        # print("admin_list")
         admin_mapping = {i["admin"]: i for i in admin_list}
         return admin_mapping
 
@@ -828,7 +830,7 @@ class Database:
                 .scalars()
                 .all()
             )
-            print(records)
+            # print(records)
             dataframe = pandas.DataFrame(
                 [
                     (
@@ -925,7 +927,7 @@ class Database:
         admin_record = self.db.session.execute(
             self.db.select(Admin).where(Admin.id == admin_id)
         ).scalar()
-        print(admin_record)
+        # print(admin_record)
         if admin_record:
             admin_record.admin_projects = []
             self.db.session.commit()
@@ -935,7 +937,7 @@ class Database:
                         self.db.select(Project).where(Project.id == i)
                     ).scalar()
                     admin_record.admin_projects.append(record)
-                    print(admin_record.admin_projects)
+                    # print(admin_record.admin_projects)
         self.db.session.commit()
         return {
             "id": admin_record.id,
@@ -948,13 +950,28 @@ class Database:
         admin_record = self.db.session.execute(
             self.db.select(Admin).where(Admin.id == admin_id)
         ).scalar()
-        if admin_record:
+        if admin_record is not None:
             if checked is None:
                 return [i for i in admin_record.admin_projects]
             else:
                 return [
                     {"id": i.id, "name": i.name} for i in admin_record.admin_projects
                 ]
+        else:
+            return []
+
+    # def update_super_admin_projects(self, project):
+    #     id = project.id
+    #     print(id)
+    #     record = self.db.session.execute(
+    #         self.db.select(Project).where(Project.id == id)
+    #     )
+    #     print("new_project", record)
+    #     for i in SUPER_ADMIN:
+    #         exist_project_list = self.get_admin_projects(i)
+    #         exist_project_list.append(record)
+    #         print("the list", exist_project_list, i)
+    #         self.add_admin_projects(exist_project_list, i)
 
     def read_file(self, file, _id):
         df = pandas.read_excel(file, skiprows=2)
@@ -974,5 +991,5 @@ class Database:
         for idx, row in df.iterrows():
             if isinstance(row["remark"], float) or isinstance(row["remark"], int):
                 continue
-            print(idx, row["name"], row["cost"], row["remark"], type(row["remark"]))
+            # print(idx, row["name"], row["cost"], row["remark"], type(row["remark"]))
             self.add_cost(_id, str(row["name"]), row["cost"], str(row["remark"]))
