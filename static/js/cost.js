@@ -151,11 +151,11 @@ function add_cost_column(data) {
     data_list.appendChild(li5);
     const li4 = document.createElement("li");
     data_list.appendChild(li4);
-    const a = document.createElement("a");
-    a.textContent = "删除";
-    a.href = "#";
-    a.dataset.id = element.id;
-    a.addEventListener("click", e => {
+    const a2 = document.createElement("a");
+    a2.textContent = "删除";
+    a2.href = "#";
+    a2.dataset.id = element.id;
+    a2.addEventListener("click", e => {
       const _id = parseInt(e.target.dataset.id, 10);
       console.log(_id);
       e.preventDefault();
@@ -179,8 +179,7 @@ function add_cost_column(data) {
           alert("获取失败，请检查");
         });
     });
-    li4.appendChild(a);
-    li4.innerHTML += " ";
+    li4.appendChild(a2);
     const a1 = document.createElement("a");
     a1.textContent = " 修改";
     a1.href =

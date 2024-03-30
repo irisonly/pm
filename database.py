@@ -358,7 +358,7 @@ class Database:
             self.collect_charger_data(m_id_list, p_id_list, record)
             return True
 
-    def get_project_list(self):
+    def get_project_list(self, admin_id):
         records = (
             self.db.session.execute(
                 self.db.select(Project).order_by(Project.start_time)
@@ -366,40 +366,93 @@ class Database:
             .scalars()
             .all()
         )
-
-        records_output = [
-            {
-                "id": i.id,
-                "name": i.name,
-                "start_time": i.start_time,
-                "end_time": i.end_time,
-                "type_id": i.type_name.name,
-                "status_id": i.status_name.name,
-                "m_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
-                    for c in i.m_charges
-                ],
-                "p_charges": [
-                    {"charge": c.name, "level": c.level_name.name, "salary": c.salary}
-                    for c in i.p_charges
-                ],
-                "profit": f"{i.profit:,.2f}",
-                "profit_rate": f"{i.profit_rate:.2%}",
-                "tax": f"{i.tax:,.2f}",
-                "balance_payment": f"{i.balance_payment:,.2f}",
-                "payment": f"{i.payment:,.2f}",
-                "cost": f"{i.cost:,.2f}",
-                "not_paid": f"{i.not_paid:,.2f}",
-            }
-            for i in records
-        ]
+        if admin_id == "0":
+            records_output = [
+                {
+                    "id": i.id,
+                    "name": i.name,
+                    "start_time": i.start_time,
+                    "end_time": i.end_time,
+                    "type_id": i.type_name.name,
+                    "status_id": i.status_name.name,
+                    "m_charges": [
+                        {
+                            "charge": c.name,
+                            "level": c.level_name.name,
+                            "salary": c.salary,
+                        }
+                        for c in i.m_charges
+                    ],
+                    "p_charges": [
+                        {
+                            "charge": c.name,
+                            "level": c.level_name.name,
+                            "salary": c.salary,
+                        }
+                        for c in i.p_charges
+                    ],
+                    "profit": f"{i.profit:,.2f}",
+                    "profit_rate": f"{i.profit_rate:.2%}",
+                    "tax": f"{i.tax:,.2f}",
+                    "balance_payment": f"{i.balance_payment:,.2f}",
+                    "payment": f"{i.payment:,.2f}",
+                    "cost": f"{i.cost:,.2f}",
+                    "not_paid": f"{i.not_paid:,.2f}",
+                }
+                for i in records
+            ]
+        else:
+            admin_projects = self.get_admin_projects(admin_id)
+            records_output = [
+                {
+                    "id": i.id,
+                    "name": i.name,
+                    "start_time": i.start_time,
+                    "end_time": i.end_time,
+                    "type_id": i.type_name.name,
+                    "status_id": i.status_name.name,
+                    "m_charges": [
+                        {
+                            "charge": c.name,
+                            "level": c.level_name.name,
+                            "salary": c.salary,
+                        }
+                        for c in i.m_charges
+                    ],
+                    "p_charges": [
+                        {
+                            "charge": c.name,
+                            "level": c.level_name.name,
+                            "salary": c.salary,
+                        }
+                        for c in i.p_charges
+                    ],
+                    "profit": f"{i.profit:,.2f}",
+                    "profit_rate": f"{i.profit_rate:.2%}",
+                    "tax": f"{i.tax:,.2f}",
+                    "balance_payment": f"{i.balance_payment:,.2f}",
+                    "payment": f"{i.payment:,.2f}",
+                    "cost": f"{i.cost:,.2f}",
+                    "not_paid": f"{i.not_paid:,.2f}",
+                }
+                for i in records
+                if i in admin_projects
+            ]
         if records_output:
             return records_output
 
     # TODO
     def get_project(
-        self, name=None, _id=None, charge_m_id=None, charge_p_id=None, type_id=None
+        self,
+        admin_id,
+        name=None,
+        _id=None,
+        charge_m_id=None,
+        charge_p_id=None,
+        type_id=None,
     ):
+        print(admin_id, name, _id, charge_p_id, charge_m_id, type_id)
+        admin_projects = self.get_admin_projects(admin_id)
         conditions = []
         if _id is not None:
             conditions.append(Project.id == _id)
@@ -496,8 +549,9 @@ class Database:
                 "dashboard": dashboard,
             }
             for i in records
+            if i in admin_projects
         ]
-
+        print(records_output)
         if records_output:
             return records_output
 
@@ -615,7 +669,13 @@ class Database:
                     "id": i.id,
                     "admin": i.user_name,
                     "password": i.password,
-                    "projects": [i for i in i.admin_projects],
+                    "projects": [
+                        {
+                            "id": i.id,
+                            "name": i.name,
+                        }
+                        for i in i.admin_projects
+                    ],
                 }
                 for i in records
             ]
@@ -883,6 +943,18 @@ class Database:
             "password": admin_record.password,
             "projects": [i for i in admin_record.admin_projects],
         }
+
+    def get_admin_projects(self, admin_id, checked=None):
+        admin_record = self.db.session.execute(
+            self.db.select(Admin).where(Admin.id == admin_id)
+        ).scalar()
+        if admin_record:
+            if checked is None:
+                return [i for i in admin_record.admin_projects]
+            else:
+                return [
+                    {"id": i.id, "name": i.name} for i in admin_record.admin_projects
+                ]
 
     def read_file(self, file, _id):
         df = pandas.read_excel(file, skiprows=2)

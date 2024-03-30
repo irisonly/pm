@@ -2,6 +2,7 @@ from flask_restful import Resource
 from flask import request
 from werkzeug.security import generate_password_hash
 from database import Database
+from flask_jwt_extended import jwt_required
 
 database = Database()
 
@@ -18,6 +19,7 @@ class Admin(Resource):
             return {"response": f"successful add admin {data['user_name']}"}
         return {"response": f"fail to add admin"}
 
+    @jwt_required()
     def get(self):
         data = database.get_administrator()
         if data:
@@ -34,3 +36,10 @@ class AdminProject(Resource):
         if response:
             return {"response": f"successful add admin projects{response}"}
         return {"response": f"fail to add admin projects"}
+
+    def get(self):
+        admin_id = request.args.get("id")
+        response = database.get_admin_projects(admin_id, "checked")
+        if response:
+            return {"response": response}
+        return {"response": "no project selected"}

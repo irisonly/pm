@@ -1,4 +1,4 @@
-import { END_POINT } from "./config.js";
+import { END_POINT, super_admin } from "./config.js";
 let project_array = [];
 let default_dashborad = {};
 
@@ -127,34 +127,36 @@ function list_render(data) {
 }
 
 function dashboard_render(data) {
-  const response = data;
-  console.log(response);
-  const dash_list = document.getElementById("dash_list");
-  dash_list.innerHTML = "";
-  const sum_of_payment_title = document.createElement("li");
-  sum_of_payment_title.textContent = "总营业额";
-  const sum_of_payment = document.createElement("li");
-  sum_of_payment.textContent = response.sum_of_payment;
-  const sum_of_profit_title = document.createElement("li");
-  sum_of_profit_title.textContent = "总利润";
-  const sum_of_profit = document.createElement("li");
-  sum_of_profit.textContent = response.sum_of_profit;
-  const sum_of_balance_payment_title = document.createElement("li");
-  sum_of_balance_payment_title.textContent = "应收账款";
-  const sum_of_balance_payment = document.createElement("li");
-  sum_of_balance_payment.textContent = response.sum_of_balance_payment;
-  const sum_of_salary_title = document.createElement("li");
-  sum_of_salary_title.textContent = "总人员成本";
-  const sum_of_salary = document.createElement("li");
-  sum_of_salary.textContent = response.sum_of_salary;
-  dash_list.appendChild(sum_of_payment_title);
-  dash_list.appendChild(sum_of_payment);
-  dash_list.appendChild(sum_of_profit_title);
-  dash_list.appendChild(sum_of_profit);
-  dash_list.appendChild(sum_of_balance_payment_title);
-  dash_list.appendChild(sum_of_balance_payment);
-  dash_list.appendChild(sum_of_salary_title);
-  dash_list.appendChild(sum_of_salary);
+  if (super_admin.includes(localStorage.getItem("id"))) {
+    const response = data;
+    console.log(response);
+    const dash_list = document.getElementById("dash_list");
+    dash_list.innerHTML = "";
+    const sum_of_payment_title = document.createElement("li");
+    sum_of_payment_title.textContent = "总营业额";
+    const sum_of_payment = document.createElement("li");
+    sum_of_payment.textContent = response.sum_of_payment;
+    const sum_of_profit_title = document.createElement("li");
+    sum_of_profit_title.textContent = "总利润";
+    const sum_of_profit = document.createElement("li");
+    sum_of_profit.textContent = response.sum_of_profit;
+    const sum_of_balance_payment_title = document.createElement("li");
+    sum_of_balance_payment_title.textContent = "应收账款";
+    const sum_of_balance_payment = document.createElement("li");
+    sum_of_balance_payment.textContent = response.sum_of_balance_payment;
+    const sum_of_salary_title = document.createElement("li");
+    sum_of_salary_title.textContent = "总人员成本";
+    const sum_of_salary = document.createElement("li");
+    sum_of_salary.textContent = response.sum_of_salary;
+    dash_list.appendChild(sum_of_payment_title);
+    dash_list.appendChild(sum_of_payment);
+    dash_list.appendChild(sum_of_profit_title);
+    dash_list.appendChild(sum_of_profit);
+    dash_list.appendChild(sum_of_balance_payment_title);
+    dash_list.appendChild(sum_of_balance_payment);
+    dash_list.appendChild(sum_of_salary_title);
+    dash_list.appendChild(sum_of_salary);
+  }
 }
 
 function type_select(data, _id) {
@@ -179,10 +181,17 @@ function submit_form(event) {
   const form_data = new FormData(form);
   const query_string = new URLSearchParams(form_data).toString();
   console.log(query_string);
-  fetch(END_POINT + "/project?id&" + query_string, {
-    method: "GET",
-    headers: { Authorization: "Bearer " + get_token() },
-  })
+  fetch(
+    END_POINT +
+      "/project?admin_id=" +
+      localStorage.getItem("id") +
+      "&id=&" +
+      query_string,
+    {
+      method: "GET",
+      headers: { Authorization: "Bearer " + get_token() },
+    }
+  )
     .then(response => response.json()) // 将响应转换为JSON
     .then(data => {
       console.log("query", data, data.response[0].dashboard);
@@ -196,7 +205,7 @@ function submit_form(event) {
 
 function reset_form(event) {
   event.preventDefault();
-  fetch(END_POINT + "/projectlist", {
+  fetch(END_POINT + "/projectlist?id=" + localStorage.getItem("id"), {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
@@ -253,9 +262,10 @@ function refresh_token() {
     });
 }
 
-fetch(END_POINT + "/projectlist", {
+fetch(END_POINT + "/projectlist?id=" + localStorage.getItem("id"), {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
+  // 将 JavaScript 对象转换为 JSON 字符串
 })
   .then(response => response.json()) // 将响应转换为JSON
   .then(data => {
@@ -265,7 +275,7 @@ fetch(END_POINT + "/projectlist", {
   })
   .catch(error => {
     console.error("请求失败:", error);
-    window.location.href = "./login.html";
+    // window.location.href = "./login.html";
   });
 
 fetch(END_POINT + "/dashboard", {
@@ -314,8 +324,14 @@ fetch(END_POINT + "/type?name=", {
   .catch(error => console.error("请求失败:", error));
 
 document.addEventListener("DOMContentLoaded", function () {
+  if (!super_admin.includes(localStorage.getItem("id"))) {
+    document.getElementById("member_manage").style.display = "none";
+    document.getElementById("excel").style.display = "none";
+    document.getElementById("admin_manage").style.display = "none";
+  }
   document.getElementById("query_form").addEventListener("submit", submit_form);
   document.getElementById("query_form").addEventListener("reset", reset_form);
+
   document.getElementById("excel").addEventListener("click", e => {
     e.preventDefault();
     fetch(END_POINT + "/excel", {

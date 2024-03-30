@@ -35,6 +35,7 @@ class Login(Resource):
                 "response": {
                     "access_token": access_token,
                     "refresh_token": refresh_token,
+                    "id": admin_mapping[user_name]["id"],
                 }
             }
         return {"response": "error"}

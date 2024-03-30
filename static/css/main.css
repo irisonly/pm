@@ -240,6 +240,16 @@ body .form_cover .mul .mul_check input {
   height: 20px !important;
   width: 20px !important;
 }
+body .form_cover .mul #project_admin {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  justify-content: left;
+}
+body .form_cover .mul #project_admin label,
+body .form_cover .mul #project_admin input {
+  margin: 30px 10px;
+}
 body .form_cover .delete {
   height: 50px;
   border-radius: 5px;

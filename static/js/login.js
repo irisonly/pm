@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "refresh_token",
             data["response"]["refresh_token"]
           );
+          localStorage.setItem("id", data["response"]["id"]);
           window.location.href = "./index.html";
         }
       })

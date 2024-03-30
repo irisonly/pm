@@ -29,7 +29,9 @@ class ProjectDetail(Resource):
 
     @jwt_required()
     def get(self):
+        admin_id = request.args.get("admin_id")
         query = database.get_project(
+            admin_id=admin_id,
             name=None if request.args.get("name") == "" else request.args.get("name"),
             _id=transfer_zero(request.args.get("id")),
             charge_m_id=transfer_zero(request.args.get("charge_m_id")),
