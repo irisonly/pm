@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <script type="module" src="../static/js/cost_overall.js"></script>
+    <title>项目管理系统</title>
+  </head>
+  <body>
+    <ul class="title" style="background-color: #33a6b8; color: #ffffff">
+      <li>项目成本一览表</li>
+    </ul>
+    <div id="dashboard">
+      <ul id="dash_list"></ul>
+    </div>
+    <div id="query_area">
+      <form action="" method="get" id="query_form">
+        <div>
+          <label for="">成本支付月份</label>
+          <select id="month" name="month"></select>
+        </div>
+
+        <button type="submit">提交筛选</button>
+        <button type="reset">重置筛选</button>
+      </form>
+    </div>
+
+    <div class="button_area">
+      <a href="./index.html"><button>返回</button></a>
+      <a href="./login.html"><button id="exit">登出</button></a>
+    </div>
+
+    <div id="container"></div>
+    <ul class="title" style="background-color: #33a6b8; color: #ffffff">
+      <li>序号</li>
+      <li>项目名称</li>
+      <li>成本项</li>
+      <li>成本金额</li>
+      <li>成本支付月份</li>
+      <li>备注</li>
+      <li>是否已支付</li>
+      <li>操作</li>
+    </ul>
+    <div id="c_container"></div>
+  </body>
+</html>

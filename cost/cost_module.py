@@ -12,6 +12,7 @@ class Cost(Resource):
             data["project_id"],
             data["name"],
             data["cost"],
+            data["month"],
             data["remark"],
             data["status"],
         )
@@ -42,8 +43,18 @@ class Cost(Resource):
             data["id"],
             data["name"],
             data["cost"],
+            data["month"],
             data["remark"],
             data["status"],
         )
+        if response:
+            return {"response": response}
+
+
+class CostOverall(Resource):
+    def get(self):
+        month = int(request.args.get("month"))
+        print(month)
+        response = database.get_cost_overall(month)
         if response:
             return {"response": response}

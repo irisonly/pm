@@ -12,7 +12,7 @@ from project.project_type_module import ProjectType
 from project.project_status_module import ProjectStatus
 from project.project_list_module import ProjectList
 from project.project_detail_module import ProjectDetail
-from cost.cost_module import Cost
+from cost.cost_module import Cost, CostOverall
 from level.level_module import Level
 
 
@@ -51,6 +51,7 @@ api.add_resource(Cost, "/cost")
 api.add_resource(Level, "/level")
 api.add_resource(Import, "/import")
 api.add_resource(AdminProject, "/adminproject")
+api.add_resource(CostOverall, "/costoverall")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口

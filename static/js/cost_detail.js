@@ -13,6 +13,23 @@ function select_default(select_id, default_value) {
     ],
     "status"
   );
+  type_select(
+    [
+      { id: 1, name: "1" },
+      { id: 2, name: "2" },
+      { id: 3, name: "3" },
+      { id: 4, name: "4" },
+      { id: 5, name: "5" },
+      { id: 6, name: "6" },
+      { id: 7, name: "7" },
+      { id: 8, name: "8" },
+      { id: 9, name: "9" },
+      { id: 10, name: "10" },
+      { id: 11, name: "11" },
+      { id: 12, name: "12" },
+    ],
+    "month"
+  );
   const select = document.getElementById(select_id);
   const sel = select.options;
   Array.from(sel).forEach((ele, ind) => {
@@ -52,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = document.getElementById("name");
       name.value = content.name;
       select_default("status", content.status);
+      select_default("month", content.month);
       const cost = document.getElementById("cost");
       cost.value = content.cost;
       const remark = document.getElementById("remark");
@@ -73,6 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     form_api["cost"] = parseFloat(form_api["cost"], 10);
     form_api["id"] = parseInt(c_id, 10);
+    form_api["month"] = parseInt(form_api["month"], 10);
     form_api["status"] = parseInt(form_api["status"], 10);
     console.log(form_api);
     fetch(END_POINT + "/cost", {

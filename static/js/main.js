@@ -148,6 +148,10 @@ function dashboard_render(data) {
     sum_of_salary_title.textContent = "总人员成本";
     const sum_of_salary = document.createElement("li");
     sum_of_salary.textContent = response.sum_of_salary;
+    const sum_of_cost_title = document.createElement("li");
+    sum_of_cost_title.textContent = "应付成本";
+    const sum_of_cost = document.createElement("li");
+    sum_of_cost.textContent = response.sum_of_cost;
     dash_list.appendChild(sum_of_payment_title);
     dash_list.appendChild(sum_of_payment);
     dash_list.appendChild(sum_of_profit_title);
@@ -156,6 +160,8 @@ function dashboard_render(data) {
     dash_list.appendChild(sum_of_balance_payment);
     dash_list.appendChild(sum_of_salary_title);
     dash_list.appendChild(sum_of_salary);
+    dash_list.appendChild(sum_of_cost_title);
+    dash_list.appendChild(sum_of_cost);
   }
 }
 

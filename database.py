@@ -156,6 +156,7 @@ class ProjectCost(db.Model):
     )
     name: Mapped[str] = mapped_column(String, nullable=False)
     cost: Mapped[float] = mapped_column(Float, nullable=False)
+    month: Mapped[int] = mapped_column(Integer, unique=False, nullable=True)
     remark: Mapped[str] = mapped_column(String, nullable=True)
     status: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
@@ -620,6 +621,7 @@ class Database:
             sum_of_balance_payment = self.db.session.query(
                 func.sum(Project.balance_payment)
             ).scalar()
+            sum_of_cost = self.db.session.query(func.sum(ProjectCost.cost)).scalar()
         else:
             sum_of_payment = (
                 self.db.session.query(func.sum(Project.payment))
@@ -638,15 +640,25 @@ class Database:
                 .where(and_(*conditions))
                 .scalar()
             )
+
+            sum_of_cost = (
+                self.db.session.query(func.sum(ProjectCost.cost))
+                .where(and_(*conditions))
+                .scalar()
+            )
+            print(sum_of_cost)
+
             if sum_of_payment is None:
                 sum_of_payment = 0
                 sum_of_profit = 0
                 sum_of_balance_payment = 0
+                sum_of_cost = 0
         return {
             "sum_of_payment": f"{sum_of_payment:,.2f}",
             "sum_of_profit": f"{sum_of_profit:,.2f}",
             "sum_of_balance_payment": f"{sum_of_balance_payment:,.2f}",
             "sum_of_salary": f"{sum_of_salary:,.2f}",
+            "sum_of_cost": f"{sum_of_cost:,.2f}",
         }
 
     def add_administrator(self, user_name, password):
@@ -707,13 +719,14 @@ class Database:
             record.not_paid = sum_of_not_paid
         self.db.session.commit()
 
-    def add_cost(self, project_id, name, cost, remark=None, status=0):
+    def add_cost(self, project_id, name, cost, month=1, remark=None, status=0):
         record = ProjectCost(
             name=name,
             project_id=project_id,
             cost=round(cost, 2),
             remark=remark,
             status=status,
+            month=month,
         )
         self.db.session.add(record)
         try:
@@ -732,9 +745,18 @@ class Database:
                 "cost": record.cost,
                 "remark": record.remark,
                 "status": record.status,
+                "month": record.month,
             }
 
-    def modify_cost(self, id, name, cost, remark, status):
+    def modify_cost(
+        self,
+        id,
+        name,
+        cost,
+        month,
+        remark,
+        status,
+    ):
         record = self.db.session.execute(
             self.db.select(ProjectCost).where(ProjectCost.id == id)
         ).scalar()
@@ -744,6 +766,8 @@ class Database:
             record.cost = round(cost, 2)
             record.remark = remark
             record.status = status
+            record.month = month
+
             try:
                 self.db.session.commit()
             except exc.IntegrityError:
@@ -758,6 +782,7 @@ class Database:
                     "cost": record.cost,
                     "remark": record.remark,
                     "status": record.status,
+                    "month": record.month,
                 }
 
     def update_project_cost(self, _id, cost, origin_cost=None):
@@ -793,6 +818,45 @@ class Database:
                     "cost": record.cost,
                     "remark": record.remark,
                     "status": record.status,
+                    "month": record.month,
+                }
+                for record in records
+            ]
+
+    def get_cost_overall(self, month):
+        conditions = []
+        if month == 13:
+            records = (
+                self.db.session.execute(
+                    self.db.select(ProjectCost).order_by(ProjectCost.id)
+                )
+                .scalars()
+                .all()
+            )
+        else:
+            records = (
+                self.db.session.execute(
+                    self.db.select(ProjectCost)
+                    .where(ProjectCost.month == month)
+                    .order_by(ProjectCost.id)
+                )
+                .scalars()
+                .all()
+            )
+            conditions.append(ProjectCost.month == month)
+        dashboard = self.count_sum(conditions)
+        if len(records) > 0:
+            return [
+                {
+                    "id": record.id,
+                    "project_id": record.project_id,
+                    "project": record.total_cost.name,
+                    "name": record.name,
+                    "cost": record.cost,
+                    "remark": record.remark,
+                    "status": record.status,
+                    "month": record.month,
+                    "dashboard": dashboard,
                 }
                 for record in records
             ]
@@ -809,6 +873,7 @@ class Database:
                 "cost": record.cost,
                 "remark": record.remark,
                 "status": record.status,
+                "month": record.month,
             }
 
     def delete_cost(self, id, _id):
