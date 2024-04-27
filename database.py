@@ -1045,6 +1045,7 @@ class Database:
                 "费用类型": "category",
                 "内容": "name",
                 "成本": "cost",
+                "付款月份": "month",
                 "付款备注（填写公司或者劳务费姓名）": "remark",
             },
             inplace=True,
@@ -1052,9 +1053,25 @@ class Database:
         # print(df)
         df.dropna(how="all", axis="index", inplace=True)
         df.ffill(inplace=True)
+        df["cost"] = df["cost"].astype(float)
         df["cost"] = df["cost"].round(2)
-        for idx, row in df.iterrows():
-            if isinstance(row["remark"], float) or isinstance(row["remark"], int):
-                continue
-            # print(idx, row["name"], row["cost"], row["remark"], type(row["remark"]))
-            self.add_cost(_id, str(row["name"]), row["cost"], str(row["remark"]))
+        try:
+            df["month"] = df["month"].astype(int)
+        except ValueError:
+            return
+        else:
+            for idx, row in df.iterrows():
+                print(
+                    idx,
+                    row["name"],
+                    row["cost"],
+                    row["month"],
+                    row["remark"],
+                )
+                self.add_cost(
+                    _id,
+                    row["name"],
+                    row["cost"],
+                    row["month"],
+                    row["remark"],
+                )
