@@ -1,5 +1,8 @@
 import { END_POINT } from "./config.js";
 
+let project_type = [];
+let project_status = [];
+
 function get_token() {
   // console.log(localStorage.getItem("access_token"));
   return localStorage.getItem("access_token");
@@ -83,10 +86,14 @@ function list_render(data) {
   }
   name.appendChild(name_edit);
   const type_id = document.createElement("li");
-  type_id.textContent = element.type_id;
+  const type_id_text = project_type.find(e => e.id == element.type_id).name;
+  type_id.textContent = type_id_text;
   data_list.appendChild(type_id);
   const status_id = document.createElement("li");
-  status_id.textContent = element.status_id;
+  const status_id_text = project_status.find(
+    e => e.id == element.status_id
+  ).name;
+  status_id.textContent = status_id_text;
   data_list.appendChild(status_id);
   const payment = document.createElement("li");
   payment.textContent = element.payment;
@@ -201,6 +208,42 @@ function add_cost_column(data) {
     li4.appendChild(a1);
   });
 }
+
+fetch(END_POINT + "/type", {
+  method: "GET", // 指定请求方法为 POST
+  headers: {
+    // 指定发送的数据类型为 JSON
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + get_token(),
+  },
+})
+  .then(response => response.json()) // 将响应转换为JSON
+  .then(data => {
+    console.log(data);
+    project_type = data.response;
+  })
+  .catch(error => {
+    console.error("请求失败:", error);
+    // window.location.href = "./login.html";
+  });
+
+fetch(END_POINT + "/status", {
+  method: "GET", // 指定请求方法为 POST
+  headers: {
+    // 指定发送的数据类型为 JSON
+    "Content-Type": "application/json",
+    // Authorization: "Bearer " + get_token(),
+  },
+})
+  .then(response => response.json()) // 将响应转换为JSON
+  .then(data => {
+    console.log(data);
+    project_status = data.response;
+  })
+  .catch(error => {
+    console.error("请求失败:", error);
+    // window.location.href = "./login.html";
+  });
 
 document.addEventListener("DOMContentLoaded", function () {
   add_cost();

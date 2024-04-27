@@ -1025,19 +1025,6 @@ class Database:
         else:
             return []
 
-    # def update_super_admin_projects(self, project):
-    #     id = project.id
-    #     print(id)
-    #     record = self.db.session.execute(
-    #         self.db.select(Project).where(Project.id == id)
-    #     )
-    #     print("new_project", record)
-    #     for i in SUPER_ADMIN:
-    #         exist_project_list = self.get_admin_projects(i)
-    #         exist_project_list.append(record)
-    #         print("the list", exist_project_list, i)
-    #         self.add_admin_projects(exist_project_list, i)
-
     def read_file(self, file, _id):
         df = pandas.read_excel(file, skiprows=2)
         df.rename(

@@ -18,6 +18,8 @@ class ProjectType(Resource):
     @jwt_required()
     def get(self):
         name = request.args.get("name")
+        if name is None:
+            name = ""
         data = database.get_type(name)
         if data is not None:
             return {"response": data}

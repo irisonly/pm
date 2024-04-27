@@ -16,6 +16,8 @@ class ProjectStatus(Resource):
 
     def get(self):
         name = request.args.get("name")
+        if name is None:
+            name = ""
         data = database.get_status(name)
         if data is not None:
             return {"response": data}
