@@ -62,7 +62,7 @@ const promise_type = fetch(END_POINT + "/charge", {
   })
   .catch(error => {
     console.error("请求失败:", error);
-    // window.location.href = "./login.html";
+    window.location.href = "./login.html";
   });
 
 const promise_level = fetch(END_POINT + "/level", {

@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from database import Database
 from flask import request
+from flask_jwt_extended import jwt_required
 
 database = Database()
 
@@ -52,6 +53,7 @@ class Cost(Resource):
 
 
 class CostOverall(Resource):
+    @jwt_required()
     def get(self):
         month = int(request.args.get("month"))
         print(month)

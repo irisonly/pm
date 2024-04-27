@@ -28,7 +28,10 @@ const promise_charge = fetch(END_POINT + "/projectlist?id=0", {
       charge_select.appendChild(label);
     });
   })
-  .catch(error => console.error("请求失败:", error));
+  .catch(error => {
+    window.location.href = "./login.html";
+    console.error("请求失败:", error);
+  });
 const query_string = window.location.search;
 const query_url = new URLSearchParams(query_string);
 const id = query_url.get("id");

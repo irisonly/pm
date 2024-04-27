@@ -5,14 +5,7 @@ function get_token() {
   return localStorage.getItem("access_token");
 }
 
-function select_default(select_id, default_value) {
-  type_select(
-    [
-      { id: 0, name: "未支付" },
-      { id: 1, name: "已支付" },
-    ],
-    "status"
-  );
+function select_default_m(select_id, default_value) {
   type_select(
     [
       { id: 1, name: "1" },
@@ -30,6 +23,25 @@ function select_default(select_id, default_value) {
     ],
     "month"
   );
+  const select = document.getElementById(select_id);
+  const sel = select.options;
+  Array.from(sel).forEach((ele, ind) => {
+    // console.log(ele.value, default_value);
+    if (ele.value == default_value) {
+      select.selectedIndex = ind;
+    }
+  });
+}
+
+function select_default_s(select_id, default_value) {
+  type_select(
+    [
+      { id: 0, name: "未支付" },
+      { id: 1, name: "已支付" },
+    ],
+    "status"
+  );
+
   const select = document.getElementById(select_id);
   const sel = select.options;
   Array.from(sel).forEach((ele, ind) => {
@@ -68,8 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(content);
       const name = document.getElementById("name");
       name.value = content.name;
-      select_default("status", content.status);
-      select_default("month", content.month);
+      select_default_s("status", content.status);
+      select_default_m("month", content.month);
       const cost = document.getElementById("cost");
       cost.value = content.cost;
       const remark = document.getElementById("remark");

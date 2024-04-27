@@ -51,7 +51,7 @@ function add_cost() {
   const month = date.getMonth() + 1;
   fetch(END_POINT + "/costoverall?month=" + month, {
     method: "GET",
-    // headers: { Authorization: "Bearer " + get_token() },
+    Authorization: "Bearer " + get_token(),
   })
     .then(response => response.json())
     .then(data => {
@@ -61,7 +61,10 @@ function add_cost() {
       add_cost_column(data["response"]);
       dashboard_render(data.response[0].dashboard);
     })
-    .catch(error => console.error("请求失败:", error));
+    .catch(error => {
+      window.location.href = "./login.html";
+      console.error("请求失败:", error);
+    });
 }
 
 function type_select(data, _id) {

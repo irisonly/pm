@@ -38,5 +38,5 @@ const promise_type = fetch(END_POINT + "/admin", {
   })
   .catch(error => {
     console.error("请求失败:", error);
-    // window.location.href = "./login.html";
+    window.location.href = "./login.html";
   });
