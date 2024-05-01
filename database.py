@@ -641,24 +641,28 @@ class Database:
                 .scalar()
             )
 
-            sum_of_cost = (
-                self.db.session.query(func.sum(ProjectCost.cost))
-                .where(and_(*conditions))
-                .scalar()
-            )
-            print(sum_of_cost)
+            # sum_of_cost = (
+            #     self.db.session.query(func.sum(ProjectCost.cost))
+            #     .where(and_(*conditions))
+            #     .scalar()
+            # )
 
-            if sum_of_payment is None:
+            if (
+                sum_of_payment is None
+                or sum_of_profit is None
+                or sum_of_balance_payment is None
+                # or sum_of_cost is None
+            ):
                 sum_of_payment = 0
                 sum_of_profit = 0
                 sum_of_balance_payment = 0
-                sum_of_cost = 0
+                # sum_of_cost = 0
         return {
             "sum_of_payment": f"{sum_of_payment:,.2f}",
             "sum_of_profit": f"{sum_of_profit:,.2f}",
             "sum_of_balance_payment": f"{sum_of_balance_payment:,.2f}",
             "sum_of_salary": f"{sum_of_salary:,.2f}",
-            "sum_of_cost": f"{sum_of_cost:,.2f}",
+            # "sum_of_cost": f"{sum_of_cost:,.2f}",
         }
 
     def add_administrator(self, user_name, password):
@@ -824,7 +828,6 @@ class Database:
             ]
 
     def get_cost_overall(self, month):
-        conditions = []
         if month == 13:
             records = (
                 self.db.session.execute(
@@ -833,7 +836,9 @@ class Database:
                 .scalars()
                 .all()
             )
+            sum_of_cost = self.db.session.query(func.sum(ProjectCost.cost)).scalar()
         else:
+            print("month", month)
             records = (
                 self.db.session.execute(
                     self.db.select(ProjectCost)
@@ -843,23 +848,31 @@ class Database:
                 .scalars()
                 .all()
             )
-            conditions.append(ProjectCost.month == month)
-        dashboard = self.count_sum(conditions)
-        if len(records) > 0:
-            return [
-                {
-                    "id": record.id,
-                    "project_id": record.project_id,
-                    "project": record.total_cost.name,
-                    "name": record.name,
-                    "cost": record.cost,
-                    "remark": record.remark,
-                    "status": record.status,
-                    "month": record.month,
-                    "dashboard": dashboard,
-                }
-                for record in records
-            ]
+            sum_of_cost = (
+                self.db.session.query(func.sum(ProjectCost.cost))
+                .where(and_(ProjectCost.month == month))
+                .scalar()
+            )
+        if records:
+            return {
+                "dashboard": self.count_sum(),
+                "sum_of_cost": f"{sum_of_cost:,.2f}",
+                "costs": [
+                    {
+                        "id": record.id,
+                        "project_id": record.project_id,
+                        "project": record.total_cost.name,
+                        "name": record.name,
+                        "cost": record.cost,
+                        "remark": record.remark,
+                        "status": record.status,
+                        "month": record.month,
+                    }
+                    for record in records
+                ],
+            }
+        else:
+            return {"dashboard": self.count_sum(), "sum_of_cost": 0}
 
     def get_single_cost(self, c_id):
         record = self.db.session.execute(

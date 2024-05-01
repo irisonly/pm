@@ -6,10 +6,8 @@ function get_token() {
 }
 
 function dashboard_render(data) {
-  const date = new Date();
-  const month = date.getMonth() + 1;
   if (super_admin.includes(localStorage.getItem("id"))) {
-    const response = data;
+    const response = data.dashboard;
     console.log(response);
     const dash_list = document.getElementById("dash_list");
     dash_list.innerHTML = "";
@@ -32,7 +30,7 @@ function dashboard_render(data) {
     const sum_of_cost_title = document.createElement("li");
     sum_of_cost_title.textContent = "当月应付成本";
     const sum_of_cost = document.createElement("li");
-    sum_of_cost.textContent = response.sum_of_cost;
+    sum_of_cost.textContent = data.sum_of_cost;
     dash_list.appendChild(sum_of_payment_title);
     dash_list.appendChild(sum_of_payment);
     dash_list.appendChild(sum_of_profit_title);
@@ -55,11 +53,14 @@ function add_cost() {
   })
     .then(response => response.json())
     .then(data => {
-      if (data == null) {
-        return;
+      console.log(data);
+      if (data.costs == null) {
+        add_cost_column([]);
+        dashboard_render(data.response);
+      } else {
+        add_cost_column(data.response.costs);
+        dashboard_render(data.response);
       }
-      add_cost_column(data["response"]);
-      dashboard_render(data.response[0].dashboard);
     })
     .catch(error => {
       // window.location.href = "./login.html";
@@ -90,12 +91,13 @@ function submit_form(event) {
   })
     .then(response => response.json())
     .then(data => {
-      if (data == null) {
+      console.log(data);
+      if (data.response.costs == null) {
         add_cost_column([]);
-      }
-      add_cost_column(data["response"]);
-      if (data.response[0].dashboard != undefined) {
-        dashboard_render(data.response[0].dashboard);
+        dashboard_render(data.response);
+      } else {
+        add_cost_column(data.response.costs);
+        dashboard_render(data.response);
       }
     })
     .catch(error => console.error("请求失败:", error));
@@ -109,7 +111,7 @@ function reset_form(event) {
 function list_render(data) {
   const container = document.getElementById("container");
   container.innerHTML = "";
-  const element = data.response;
+  const element = data;
   console.log(element);
   const data_list = document.createElement("ul");
   data_list.className = "projects";
@@ -175,12 +177,13 @@ function list_render(data) {
 function add_cost_column(data) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const pid = urlParams.get("id");
+  // const pid = urlParams.get("id");
   const container = document.getElementById("c_container");
   container.innerHTML = "";
   if (data.length == 0) {
     return;
   }
+  console.log("data", data);
   data.forEach(element => {
     const data_list = document.createElement("ul");
     data_list.className = "projects";
@@ -230,7 +233,7 @@ function add_cost_column(data) {
           "Content-Type": "application/json",
           //   Authorization: "Bearer " + refresh_token,
         },
-        body: JSON.stringify({ id: _id, pid: pid }), // 将 JavaScript 对象转换为 JSON 字符串
+        body: JSON.stringify({ id: _id, pid: element.project_id }), // 将 JavaScript 对象转换为 JSON 字符串
       })
         .then(response => response.json()) // 解析 JSON 响应
         .then(data => {

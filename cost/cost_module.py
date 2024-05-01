@@ -56,7 +56,6 @@ class CostOverall(Resource):
     @jwt_required()
     def get(self):
         month = int(request.args.get("month"))
-        print(month)
         response = database.get_cost_overall(month)
         if response:
             return {"response": response}
