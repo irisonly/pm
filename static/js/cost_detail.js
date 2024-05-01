@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(error => {
       console.error("请求失败:", error);
-      // window.location.href = "./login.html";
+      window.location.href = "./login.html";
     });
 
   const form = document.getElementById("project_form");

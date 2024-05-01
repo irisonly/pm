@@ -6,6 +6,13 @@ function get_token() {
   return localStorage.getItem("access_token");
 }
 
+function select_all_project() {
+  const checkboxes = document.getElementsByName("m");
+  checkboxes.forEach(element => {
+    element.checked = true;
+  });
+}
+
 const promise_charge = fetch(END_POINT + "/projectlist?id=0", {
   method: "GET",
   headers: { Authorization: "Bearer " + get_token() },
@@ -53,6 +60,10 @@ Promise.all([project_selected, promise_charge])
   .then(data => {});
 
 document.addEventListener("DOMContentLoaded", () => {
+  const all_btn = document.getElementById("select_all");
+  all_btn.addEventListener("click", () => {
+    select_all_project();
+  });
   const query_string = window.location.search;
   const query_url = new URLSearchParams(query_string);
   const id = query_url.get("id");

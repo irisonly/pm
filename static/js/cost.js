@@ -209,42 +209,6 @@ function add_cost_column(data) {
   });
 }
 
-fetch(END_POINT + "/type", {
-  method: "GET", // 指定请求方法为 POST
-  headers: {
-    // 指定发送的数据类型为 JSON
-    "Content-Type": "application/json",
-    Authorization: "Bearer " + get_token(),
-  },
-})
-  .then(response => response.json()) // 将响应转换为JSON
-  .then(data => {
-    console.log(data);
-    project_type = data.response;
-  })
-  .catch(error => {
-    console.error("请求失败:", error);
-    // window.location.href = "./login.html";
-  });
-
-fetch(END_POINT + "/status", {
-  method: "GET", // 指定请求方法为 POST
-  headers: {
-    // 指定发送的数据类型为 JSON
-    "Content-Type": "application/json",
-    // Authorization: "Bearer " + get_token(),
-  },
-})
-  .then(response => response.json()) // 将响应转换为JSON
-  .then(data => {
-    console.log(data);
-    project_status = data.response;
-  })
-  .catch(error => {
-    console.error("请求失败:", error);
-    // window.location.href = "./login.html";
-  });
-
 document.addEventListener("DOMContentLoaded", function () {
   add_cost();
   const queryString = window.location.search;
@@ -277,12 +241,38 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
     "month"
   );
-
-  fetch(END_POINT + "/project?name&charge_p_id&type_id&charge_m_id&id=" + _id, {
+  fetch(END_POINT + "/type", {
     method: "GET",
-    headers: { Authorization: "Bearer " + get_token() },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + get_token(),
+    },
   })
-    .then(response => response.json()) // 将响应转换为JSON
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      project_type = data.response;
+      return fetch(END_POINT + "/status", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + get_token(),
+        },
+      });
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      project_status = data.response;
+      return fetch(
+        END_POINT + "/project?name&charge_p_id&type_id&charge_m_id&id=" + _id,
+        {
+          method: "GET",
+          headers: { Authorization: "Bearer " + get_token() },
+        }
+      );
+    })
+    .then(response => response.json())
     .then(data => {
       list_render(data);
     })
@@ -290,6 +280,54 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("请求失败:", error);
       window.location.href = "./login.html";
     });
+  // fetch(END_POINT + "/type", {
+  //   method: "GET", // 指定请求方法为 POST
+  //   headers: {
+  //     // 指定发送的数据类型为 JSON
+  //     "Content-Type": "application/json",
+  //     Authorization: "Bearer " + get_token(),
+  //   },
+  // })
+  //   .then(response => response.json()) // 将响应转换为JSON
+  //   .then(data => {
+  //     console.log(data);
+  //     project_type = data.response;
+  //   })
+  //   .catch(error => {
+  //     console.error("请求失败:", error);
+  //     // window.location.href = "./login.html";
+  //   });
+
+  // fetch(END_POINT + "/status", {
+  //   method: "GET", // 指定请求方法为 POST
+  //   headers: {
+  //     // 指定发送的数据类型为 JSON
+  //     "Content-Type": "application/json",
+  //     // Authorization: "Bearer " + get_token(),
+  //   },
+  // })
+  //   .then(response => response.json()) // 将响应转换为JSON
+  //   .then(data => {
+  //     console.log(data);
+  //     project_status = data.response;
+  //   })
+  //   .catch(error => {
+  //     console.error("请求失败:", error);
+  //     // window.location.href = "./login.html";
+  //   });
+
+  // fetch(END_POINT + "/project?name&charge_p_id&type_id&charge_m_id&id=" + _id, {
+  //   method: "GET",
+  //   headers: { Authorization: "Bearer " + get_token() },
+  // })
+  //   .then(response => response.json()) // 将响应转换为JSON
+  //   .then(data => {
+  //     list_render(data);
+  //   })
+  //   .catch(error => {
+  //     console.error("请求失败:", error);
+  //     // window.location.href = "./login.html";
+  //   });
 
   const form = document.getElementById("cost_form");
   form.addEventListener("submit", e => {

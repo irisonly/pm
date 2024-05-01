@@ -51,7 +51,7 @@ function add_cost() {
   const month = date.getMonth() + 1;
   fetch(END_POINT + "/costoverall?month=" + month, {
     method: "GET",
-    Authorization: "Bearer " + get_token(),
+    headers: { Authorization: "Bearer " + get_token() },
   })
     .then(response => response.json())
     .then(data => {
@@ -62,7 +62,7 @@ function add_cost() {
       dashboard_render(data.response[0].dashboard);
     })
     .catch(error => {
-      window.location.href = "./login.html";
+      // window.location.href = "./login.html";
       console.error("请求失败:", error);
     });
 }
