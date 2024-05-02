@@ -144,6 +144,7 @@ class Project(db.Model):
         Integer, ForeignKey("project_status.id"), nullable=False
     )
     project_cost = relationship("ProjectCost", backref="total_cost")
+    project_invoice = relationship("ProjectInvoice", backref="total_invoice")
 
 
 class ProjectCost(db.Model):
@@ -159,6 +160,21 @@ class ProjectCost(db.Model):
     month: Mapped[int] = mapped_column(Integer, unique=False, nullable=True)
     remark: Mapped[str] = mapped_column(String, nullable=True)
     status: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+
+class ProjectInvoice(db.Model):
+    __tablename__ = "project_invoice"
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, unique=True, nullable=False
+    )
+    project_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("project.id"), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    invoice: Mapped[float] = mapped_column(Float, nullable=False)
+    invoice_tax: Mapped[float] = mapped_column(Float, nullable=False)
+    month: Mapped[int] = mapped_column(Integer, unique=False, nullable=True)
+    remark: Mapped[str] = mapped_column(String, nullable=True)
 
 
 class Database:
@@ -1075,3 +1091,145 @@ class Database:
                     row["month"],
                     row["remark"],
                 )
+
+    # TODO
+    # __________________________ invoice _______________________ #
+
+    def add_invoice(self, project_id, name, invoice, month=1, remark=None):
+        record = ProjectInvoice(
+            name=name,
+            project_id=project_id,
+            invoice=round(invoice, 2),
+            remark=remark,
+            month=month,
+            invoice_tax=round(invoice * 0.06, 2),
+        )
+        self.db.session.add(record)
+        res = self.update_project_invoice(project_id, round(invoice, 2))
+        if res:
+            try:
+                self.db.session.flush()
+                self.db.session.commit()
+            except exc.IntegrityError:
+                return False
+            else:
+                # # 更新项目成本，利润和利润率
+                return {
+                    "id": record.id,
+                    "project_id": record.project_id,
+                    "name": record.name,
+                    "invoice": record.invoice,
+                    "remark": record.remark,
+                    "month": record.month,
+                    "invoice_tax": record.invoice_tax,
+                }
+        return False
+
+    # TODO
+    def modify_invoice(
+        self,
+        _id,
+        name,
+        invoice,
+        month,
+        remark,
+    ):
+        record = self.db.session.execute(
+            self.db.select(ProjectInvoice).where(ProjectInvoice.id == _id)
+        ).scalar()
+        if record:
+            origin_invoice = record.invoice
+            record.name = name
+            record.invoice = round(invoice, 2)
+            record.remark = remark
+            record.month = month
+            record.invoice_tax = round(invoice * 0.06, 2)
+            res = self.update_project_invoice(
+                record.project_id, round(invoice, 2), round(origin_invoice, 2)
+            )
+            if res:
+
+                try:
+                    self.db.session.commit()
+                except exc.IntegrityError:
+                    return False
+                else:
+                    return {
+                        "id": record.id,
+                        "project_id": record.project_id,
+                        "name": record.name,
+                        "invoice": record.invoice,
+                        "remark": record.remark,
+                        "month": record.month,
+                        "invoice_tax": record.invoice_tax,
+                    }
+            return False
+
+    def update_project_invoice(self, _id, invoice, balance_payment=None):
+        record = self.db.session.execute(
+            self.db.select(Project).where(Project.id == _id)
+        ).scalar()
+        if balance_payment:
+            payment_count = round(record.balance_payment + balance_payment - invoice, 2)
+            record.balance_payment = payment_count
+        else:
+            payment_count = round(record.balance_payment - invoice, 2)
+            record.balance_payment = payment_count
+        if payment_count < 0:
+            return False
+        self.db.session.commit()
+        return True
+
+    def get_invoice(self, _id):
+        records = (
+            self.db.session.execute(
+                self.db.select(ProjectInvoice)
+                .where(ProjectInvoice.project_id == _id)
+                .order_by(ProjectInvoice.id)
+            )
+            .scalars()
+            .all()
+        )
+
+        if len(records) > 0:
+            return [
+                {
+                    "id": record.id,
+                    "project_id": record.project_id,
+                    "name": record.name,
+                    "invoice": record.invoice,
+                    "month": record.month,
+                    "remark": record.remark,
+                    "invoice_tax": record.invoice_tax,
+                }
+                for record in records
+            ]
+
+    def get_single_invoice(self, c_id):
+        record = self.db.session.execute(
+            self.db.select(ProjectInvoice).where(ProjectInvoice.id == c_id)
+        ).scalar()
+        if record:
+            return {
+                "id": record.id,
+                "project_id": record.project_id,
+                "name": record.name,
+                "invoice": record.invoice,
+                "remark": record.remark,
+                "month": record.month,
+                "invoice_tax": record.invoice_tax,
+            }
+
+    def delete_invoice(self, _id):
+        record = self.db.session.execute(
+            self.db.select(ProjectInvoice).where(ProjectInvoice.id == _id)
+        ).scalar()
+        print(record)
+        if record is not None:
+            # self.update_project_cost(_id, -record.cost)
+            self.update_project_invoice(record.project_id, -round(record.invoice, 2))
+            self.db.session.delete(record)
+            self.db.session.commit()
+            # self.update_not_paid(_id)
+            return True
+        return False

@@ -80,6 +80,14 @@ function list_render(data) {
       const payment = document.createElement("li");
       payment.textContent = element.payment;
       data_list.appendChild(payment);
+      const balance = document.createElement("li");
+      data_list.appendChild(balance);
+      const balance_payment = document.createElement("a");
+      balance_payment.id = element.id;
+      balance_payment.textContent = element.balance_payment;
+      balance_payment.href = "./invoice.html?id=" + element.id;
+      balance_payment.className = "project_name";
+      balance.appendChild(balance_payment);
       const cost = document.createElement("li");
       data_list.appendChild(cost);
       const cost_edit = document.createElement("a");
@@ -87,9 +95,9 @@ function list_render(data) {
       cost_edit.textContent = element.cost;
       cost_edit.href = "./cost.html?id=" + element.id;
       cost.appendChild(cost_edit);
-      const not_paid = document.createElement("li");
-      not_paid.textContent = element.not_paid;
-      data_list.appendChild(not_paid);
+      // const not_paid = document.createElement("li");
+      // not_paid.textContent = element.not_paid;
+      // data_list.appendChild(not_paid);
       const tax = document.createElement("li");
       tax.textContent = element.tax;
       data_list.appendChild(tax);
@@ -148,10 +156,10 @@ function dashboard_render(data) {
     sum_of_salary_title.textContent = "总人员成本";
     const sum_of_salary = document.createElement("li");
     sum_of_salary.textContent = response.sum_of_salary;
-    const sum_of_cost_title = document.createElement("li");
-    sum_of_cost_title.textContent = "应付成本";
-    const sum_of_cost = document.createElement("li");
-    sum_of_cost.textContent = response.sum_of_cost;
+    // const sum_of_cost_title = document.createElement("li");
+    // sum_of_cost_title.textContent = "应付成本";
+    // const sum_of_cost = document.createElement("li");
+    // sum_of_cost.textContent = response.sum_of_cost;
     dash_list.appendChild(sum_of_payment_title);
     dash_list.appendChild(sum_of_payment);
     dash_list.appendChild(sum_of_profit_title);
@@ -160,8 +168,8 @@ function dashboard_render(data) {
     dash_list.appendChild(sum_of_balance_payment);
     dash_list.appendChild(sum_of_salary_title);
     dash_list.appendChild(sum_of_salary);
-    dash_list.appendChild(sum_of_cost_title);
-    dash_list.appendChild(sum_of_cost);
+    // dash_list.appendChild(sum_of_cost_title);
+    // dash_list.appendChild(sum_of_cost);
   }
 }
 

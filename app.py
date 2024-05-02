@@ -14,6 +14,7 @@ from project.project_list_module import ProjectList
 from project.project_detail_module import ProjectDetail
 from cost.cost_module import Cost, CostOverall
 from level.level_module import Level
+from invoice.invoice_module import Invoice
 
 
 app = Flask(__name__)  # 创建 Flask 应用实例
@@ -52,6 +53,7 @@ api.add_resource(Level, "/level")
 api.add_resource(Import, "/import")
 api.add_resource(AdminProject, "/adminproject")
 api.add_resource(CostOverall, "/costoverall")
+api.add_resource(Invoice, "/invoice")
 
 if __name__ == "__main__":
     app.run(port=4000, debug=True)  # 启动 Flask 应用，监听 4000 端口

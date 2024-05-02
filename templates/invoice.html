@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/css/main.css" />
+    <script type="module" src="../static/js/invoice.js"></script>
+    <title>项目管理系统</title>
+  </head>
+  <body>
+    <!-- <div id="dashboard">
+      <ul id="dash_list"></ul>
+    </div> -->
+    <ul class="title" style="background-color: #33a6b8; color: #ffffff">
+      <li>项目开票</li>
+    </ul>
+
+    <div class="button_area">
+      <form action="" method="post" id="cost_form">
+        <label for="">开票项</label>
+        <input type="text" id="name" placeholder="输入开票项" name="name" />
+        <label for="">金额</label>
+        <input
+          type="text"
+          id="cost"
+          placeholder="输入开票金额"
+          name="invoice"
+        />
+        <label for="type_id">月份</label>
+        <select id="month" name="month">
+          <label for="">备注</label>
+          <input type="text" id="remark" placeholder="输入备注" name="remark" />
+
+          <!-- 其他类型选项 -->
+        </select>
+        <button type="submit" style="background-color: #33a6b8; color: #ffffff">
+          新增开票
+        </button>
+      </form>
+
+      <a href="./index.html"><button>返回</button></a>
+      <a href="./login.html"><button id="exit">登出</button></a>
+    </div>
+    <ul class="title" style="background-color: #33a6b8; color: #ffffff">
+      <li>项目名称</li>
+      <li>项目类型</li>
+      <li>项目状态</li>
+      <li>项目金额</li>
+      <li>项目尾款</li>
+      <li>项目成本</li>
+      <li>未付成本</li>
+      <li>项目发票</li>
+      <li>项目利润</li>
+      <li>项目利润率</li>
+      <li>项目管理</li>
+      <li>项目专家</li>
+      <li>开始时间</li>
+      <li>结束时间</li>
+    </ul>
+    <div id="container"></div>
+    <ul class="title" style="background-color: #33a6b8; color: #ffffff">
+      <li>序号</li>
+      <li>发票项</li>
+      <li>发票金额</li>
+      <li>发票税额</li>
+      <li>发票开具月份</li>
+      <li>备注</li>
+      <li>操作</li>
+    </ul>
+    <div id="c_container"></div>
+  </body>
+</html>
