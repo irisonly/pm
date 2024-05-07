@@ -8,7 +8,7 @@ function get_token() {
 function dashboard_render(data) {
   if (super_admin.includes(localStorage.getItem("id"))) {
     const response = data.dashboard;
-    console.log(response);
+    // console.log(response);
     const dash_list = document.getElementById("dash_list");
     dash_list.innerHTML = "";
     const sum_of_payment_title = document.createElement("li");
@@ -53,13 +53,35 @@ function add_cost() {
   })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
+      // console.log(data);
       if (data.costs == null) {
         add_cost_column([]);
         dashboard_render(data.response);
       } else {
         add_cost_column(data.response.costs);
         dashboard_render(data.response);
+      }
+    })
+    .catch(error => {
+      // window.location.href = "./login.html";
+      console.error("请求失败:", error);
+    });
+}
+
+function add_invoice() {
+  const date = new Date();
+  const month = date.getMonth() + 1;
+  fetch(END_POINT + "/invoiceoverall?month=" + month, {
+    method: "GET",
+    headers: { Authorization: "Bearer " + get_token() },
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      if (data.response.invoice == null) {
+        add_invoice_column([]);
+      } else {
+        add_invoice_column(data.response.invoice);
       }
     })
     .catch(error => {
@@ -85,7 +107,7 @@ function submit_form(event) {
   const form_data = new FormData(form);
   const query_string = new URLSearchParams(form_data).toString();
   // console.log(query_string);
-  fetch(END_POINT + "/costoverall?" + query_string, {
+  const cost = fetch(END_POINT + "/costoverall?" + query_string, {
     method: "GET",
     headers: { Authorization: "Bearer " + get_token() },
   })
@@ -101,6 +123,24 @@ function submit_form(event) {
       }
     })
     .catch(error => console.error("请求失败:", error));
+  const invoice = fetch(END_POINT + "/invoiceoverall?" + query_string, {
+    method: "GET",
+    headers: { Authorization: "Bearer " + get_token() },
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      if (data.response.invoice == null) {
+        add_invoice_column([]);
+      } else {
+        add_invoice_column(data.response.invoice);
+      }
+    })
+    .catch(error => {
+      // window.location.href = "./login.html";
+      console.error("请求失败:", error);
+    });
+  Promise.all([cost, invoice]);
 }
 
 function reset_form(event) {
@@ -183,7 +223,7 @@ function add_cost_column(data) {
   if (data.length == 0) {
     return;
   }
-  console.log("data", data);
+  // console.log("data", data);
   data.forEach(element => {
     const data_list = document.createElement("ul");
     data_list.className = "projects";
@@ -255,6 +295,81 @@ function add_cost_column(data) {
   });
 }
 
+function add_invoice_column(data) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  // const pid = urlParams.get("id");
+  const container = document.getElementById("i_container");
+  container.innerHTML = "";
+  if (data.length == 0) {
+    return;
+  }
+  console.log("data", data);
+  data.forEach(element => {
+    const data_list = document.createElement("ul");
+    data_list.className = "projects";
+    data_list.innerHtml = "";
+    container.appendChild(data_list);
+    const li_id = document.createElement("li");
+    li_id.innerHTML = element.id;
+    data_list.appendChild(li_id);
+    const li_project = document.createElement("li");
+    li_project.innerHTML = element.project;
+    data_list.appendChild(li_project);
+    const li_name = document.createElement("li");
+    li_name.innerHTML = element.name;
+    data_list.appendChild(li_name);
+    const li_invoice = document.createElement("li");
+    li_invoice.innerHTML = element.invoice;
+    data_list.appendChild(li_invoice);
+    const li_month = document.createElement("li");
+    li_month.innerHTML = element.month + "月";
+    data_list.appendChild(li_month);
+    const li_remark = document.createElement("li");
+    li_remark.innerHTML = element.remark;
+    data_list.appendChild(li_remark);
+    const li_tax = document.createElement("li");
+    li_tax.innerHTML = element.invoice_tax;
+    data_list.appendChild(li_tax);
+    const li4 = document.createElement("li");
+    data_list.appendChild(li4);
+    const a2 = document.createElement("a");
+    a2.textContent = "删除";
+    a2.href = "#";
+    a2.dataset.id = element.id;
+    a2.addEventListener("click", e => {
+      const _id = parseInt(e.target.dataset.id, 10);
+      console.log(_id);
+      e.preventDefault();
+      fetch(END_POINT + "/invoice", {
+        method: "DELETE", // 指定请求方法为 POST
+        headers: {
+          // 指定发送的数据类型为 JSON
+          "Content-Type": "application/json",
+          //   Authorization: "Bearer " + refresh_token,
+        },
+        body: JSON.stringify({ id: _id, pid: element.project_id }), // 将 JavaScript 对象转换为 JSON 字符串
+      })
+        .then(response => response.json()) // 解析 JSON 响应
+        .then(data => {
+          alert("删除成功");
+          console.log(data);
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("获取失败，请检查");
+        });
+    });
+    li4.appendChild(a2);
+    const a1 = document.createElement("a");
+    a1.textContent = " 修改";
+    a1.href =
+      "./invoice_detail.html?id=" + element.project_id + "&c_id=" + element.id;
+    li4.appendChild(a1);
+  });
+}
+
 // fetch(END_POINT + "/dashboard", {
 //   method: "GET",
 //   headers: { Authorization: "Bearer " + get_token() },
@@ -289,6 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "month"
   );
   add_cost();
+  add_invoice();
   document.getElementById("query_form").addEventListener("submit", submit_form);
   document.getElementById("query_form").addEventListener("reset", reset_form);
 });

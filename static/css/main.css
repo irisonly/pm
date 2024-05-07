@@ -134,6 +134,7 @@ body .bg-black {
 }
 body #container,
 body #c_container,
+body #i_container,
 body #m_container {
   width: 90%;
   display: flex;
@@ -142,9 +143,11 @@ body #m_container {
 }
 body #container .projects,
 body #c_container .projects,
+body #i_container .projects,
 body #m_container .projects,
 body #container .m_projects,
 body #c_container .m_projects,
+body #i_container .m_projects,
 body #m_container .m_projects {
   height: auto;
   display: flex;
@@ -156,9 +159,11 @@ body #m_container .m_projects {
 }
 body #container .projects li,
 body #c_container .projects li,
+body #i_container .projects li,
 body #m_container .projects li,
 body #container .m_projects li,
 body #c_container .m_projects li,
+body #i_container .m_projects li,
 body #m_container .m_projects li {
   text-align: center;
   width: 210px;
@@ -167,9 +172,11 @@ body #m_container .m_projects li {
 }
 body #container .projects .project_name,
 body #c_container .projects .project_name,
+body #i_container .projects .project_name,
 body #m_container .projects .project_name,
 body #container .m_projects .project_name,
 body #c_container .m_projects .project_name,
+body #i_container .m_projects .project_name,
 body #m_container .m_projects .project_name {
   overflow: hidden;
   line-height: 12px;

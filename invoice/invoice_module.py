@@ -50,3 +50,12 @@ class Invoice(Resource):
         if response:
             return {"response": response}
         return {"response": f"fail to modify the invoice"}
+
+
+class InvoiceOverall(Resource):
+    @jwt_required()
+    def get(self):
+        month = int(request.args.get("month"))
+        response = database.get_invoice_overall(month)
+        if response:
+            return {"response": response}

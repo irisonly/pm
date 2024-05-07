@@ -1233,3 +1233,53 @@ class Database:
             # self.update_not_paid(_id)
             return True
         return False
+
+    def get_invoice_overall(self, month):
+        if month == 13:
+            records = (
+                self.db.session.execute(
+                    self.db.select(ProjectInvoice).order_by(ProjectInvoice.id)
+                )
+                .scalars()
+                .all()
+            )
+            sum_of_invoice = self.db.session.query(
+                func.sum(ProjectInvoice.invoice)
+            ).scalar()
+        else:
+            print("month", month)
+            records = (
+                self.db.session.execute(
+                    self.db.select(ProjectInvoice)
+                    .where(ProjectInvoice.month == month)
+                    .order_by(ProjectInvoice.id)
+                )
+                .scalars()
+                .all()
+            )
+            sum_of_invoice = (
+                self.db.session.query(func.sum(ProjectInvoice.invoice))
+                .where(and_(ProjectInvoice.month == month))
+                .scalar()
+            )
+        print(records)
+        if records:
+            return {
+                "dashboard": self.count_sum(),
+                "sum_of_invoice": f"{sum_of_invoice:,.2f}",
+                "invoice": [
+                    {
+                        "id": record.id,
+                        "project_id": record.project_id,
+                        "project": record.total_invoice.name,
+                        "name": record.name,
+                        "invoice": record.invoice,
+                        "remark": record.remark,
+                        "month": record.month,
+                        "invoice_tax": record.invoice_tax,
+                    }
+                    for record in records
+                ],
+            }
+        else:
+            return {"dashboard": self.count_sum(), "sum_of_invoice": 0}
